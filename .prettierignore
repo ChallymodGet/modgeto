@@ -1,0 +1,8 @@
+# Approved source documents and planning files are edited by hand.
+docs/
+*.md
+
+pnpm-lock.yaml
+.next/
+node_modules/
+next-env.d.ts

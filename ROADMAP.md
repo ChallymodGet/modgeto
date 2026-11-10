@@ -12,22 +12,26 @@ Strategy (D-022): build the UI first against typed fixtures, and build and test 
 
 ## Phase 0: Repository and tooling scaffold
 
-- [ ] Make the first commit on `main` (the repo has no commits yet). Add `.gitignore` and `.env.example`.
-- [ ] Next.js 16 (App Router), React 19, and strict TypeScript with pnpm, using a `src/` directory and `@/` path alias.
-- [ ] ESLint, Prettier, and the scripts `typecheck`, `lint`, `test`, and `test:watch`.
-- [ ] Vitest configured for `src/lib/domain`.
-- [ ] Tailwind CSS v4 (CSS-first `@theme`, no JS config).
-- [ ] shadcn/ui init (Tailwind v4 compatible) and Lucide.
-- [ ] Inter via `next/font`.
-- [ ] Create the folder skeleton from CLAUDE.md §15: `components/{ui,layout,service,brief,request,project,payment,subscription,notifications}`, `features/*`, `lib/domain`, `lib/fixtures`, `types`, `styles`.
-- [ ] CI (optional, recommended): typecheck, lint, and test on every push.
+- [x] Make the first commit on `main` (the repo has no commits yet). Add `.gitignore` and `.env.example`.
+- [x] Next.js 16 (App Router), React 19, and strict TypeScript with pnpm, using a `src/` directory and `@/` path alias.
+- [x] ESLint, Prettier, and the scripts `typecheck`, `lint`, `test`, and `test:watch`.
+- [x] Vitest configured for `src/lib/domain`.
+- [x] Tailwind CSS v4 (CSS-first `@theme`, no JS config).
+- [x] shadcn/ui init (Tailwind v4 compatible, Base UI per D-034) and Lucide.
+- [x] Inter via `next/font`.
+- [x] Create the folder skeleton from CLAUDE.md §15: `components/{ui,layout,service,brief,request,project,payment,subscription,notifications}`, `features/*`, `lib/domain`, `lib/fixtures`, `types`, `styles`.
+- [x] CI (optional, recommended): typecheck, lint, and test on every push.
 
 **Start now, in parallel (long lead times, tracked risks in D-xxx §5):**
-- [ ] Paystack merchant account with USD eligibility.
+- [x] Paystack merchant account (Live, Pre-Approved, 10 Nov 2026). Website: https://modgeto.vercel.app
+- [ ] Paystack: finish compliance (Pre-Approved → fully approved) and get USD enabled (dashboard shows NGN only).
+- [x] Prelaunch landing page live at https://modgeto.vercel.app (D-033). `modgeto.com` is not registered yet.
 - [ ] Termii account and an international OTP delivery test.
-- [ ] Supabase, Cloudflare R2, Brevo, and Vercel accounts, plus the `modgeto.com` DNS.
+- [x] Vercel account and project (deploys from `main`).
+- [ ] Supabase, Cloudflare R2, and Brevo accounts.
+- [ ] Register `modgeto.com`, then set `SITE_URL` in Vercel.
 
-**Exit:** `pnpm dev` runs, and `pnpm typecheck && pnpm lint && pnpm test` pass.
+**Exit:** `pnpm dev` runs, and `pnpm typecheck && pnpm lint && pnpm test` pass. **Met 10 Nov 2026.**
 
 ---
 

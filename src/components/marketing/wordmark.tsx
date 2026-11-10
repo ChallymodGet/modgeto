@@ -17,7 +17,14 @@ export function LogoMark({ className = "size-8" }: { className?: string }) {
         strokeWidth="2.6"
         strokeLinecap="round"
       />
-      <path d="M19.5 20.5 22 23l2.5-2.5" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M19.5 20.5 22 23l2.5-2.5"
+        fill="none"
+        stroke="#fff"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -26,7 +33,9 @@ export function Wordmark() {
   return (
     <span className="inline-flex items-center gap-2.5">
       <LogoMark />
-      <span className="text-[1.375rem] font-semibold tracking-[-0.03em] text-foreground">modgeto</span>
+      <span className="text-[1.375rem] font-semibold tracking-[-0.03em] text-foreground">
+        modgeto
+      </span>
     </span>
   );
 }

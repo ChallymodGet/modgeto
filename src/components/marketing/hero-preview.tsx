@@ -94,7 +94,9 @@ export function HeroPreview() {
                 </div>
                 <div>
                   <p className="text-h4 text-foreground">Ada Okafor</p>
-                  <p className="text-body-sm text-foreground-muted">Brand and UI Designer · Lagos</p>
+                  <p className="text-body-sm text-foreground-muted">
+                    Brand and UI Designer · Lagos
+                  </p>
                 </div>
               </div>
               <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-success-border bg-success-subtle px-3 py-1 text-caption font-medium text-success">
@@ -203,7 +205,7 @@ export function HeroPreview() {
           <div className="mt-5 flex items-end justify-between border-t border-border pt-4">
             <div>
               <p className="text-caption text-foreground-muted">Project total</p>
-              <p className="text-numeral text-[1.75rem] leading-none text-foreground">
+              <p className="text-[1.75rem] leading-none text-numeral text-foreground">
                 {addOn ? "₦530,000" : "₦450,000"}
               </p>
             </div>

@@ -1,4 +1,13 @@
-import { ArrowDown, Check, ClipboardList, Copy, Layers, Link2, Mail, ScrollText } from "lucide-react";
+import {
+  ArrowDown,
+  Check,
+  ClipboardList,
+  Copy,
+  Layers,
+  Link2,
+  Mail,
+  ScrollText,
+} from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { HeroPreview } from "@/components/marketing/hero-preview";
@@ -62,21 +71,23 @@ export default function Home() {
       <main id="main" className="relative z-10">
         {/* Hero */}
         <section className="mx-auto max-w-[1200px] px-5 pt-10 pb-24 text-center sm:px-8 sm:pt-16 lg:pb-36">
-          <p
-            className="mg-rise mx-auto inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-3.5 py-1.5 text-caption font-medium text-foreground-secondary backdrop-blur sm:hidden"
-          >
+          <p className="mg-rise mx-auto inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-3.5 py-1.5 text-caption font-medium text-foreground-secondary backdrop-blur sm:hidden">
             <span className="mg-pulse size-1.5 rounded-full bg-success" />
             Preparing for launch
           </p>
-          <h1 className="mg-rise text-display mx-auto mt-6 max-w-[14ch] text-balance sm:mt-0" style={{ animationDelay: "80ms" }}>
+          <h1
+            className="mg-rise mx-auto mt-6 max-w-[14ch] text-display text-balance sm:mt-0"
+            style={{ animationDelay: "80ms" }}
+          >
             <span className="mg-headline-gradient">One link</span> to start working with you.
           </h1>
           <p
-            className="mg-rise text-body-lg mx-auto mt-6 max-w-[60ch] text-pretty text-foreground-secondary"
+            className="mg-rise mx-auto mt-6 max-w-[60ch] text-body-lg text-pretty text-foreground-secondary"
             style={{ animationDelay: "180ms" }}
           >
-            Modgeto helps independent Creatives package their Services, pricing, Project requirements
-            and working terms into one personalized link that Clients can use to start a Project.
+            Modgeto helps independent Creatives package their Services, pricing, Project
+            requirements and working terms into one personalized link that Clients can use to start
+            a Project.
           </p>
           <div className="mg-rise mt-8 flex justify-center" style={{ animationDelay: "260ms" }}>
             <a
@@ -94,11 +105,14 @@ export default function Home() {
         </section>
 
         {/* For Creatives */}
-        <section id="creatives" className="scroll-mt-8 border-t border-border bg-surface/40 py-20 sm:py-28">
+        <section
+          id="creatives"
+          className="scroll-mt-8 border-t border-border bg-surface/40 py-20 sm:py-28"
+        >
           <div className="mx-auto max-w-[1200px] px-5 sm:px-8">
             <div className="mg-reveal max-w-[40rem]">
               <p className="text-label text-primary-text">For Creatives</p>
-              <h2 className="text-h2 mt-3 text-balance">
+              <h2 className="mt-3 text-h2 text-balance">
                 Set up how you work once. Share it everywhere.
               </h2>
             </div>
@@ -139,7 +153,10 @@ export default function Home() {
         {/* Built for */}
         <section className="py-20 sm:py-24" aria-labelledby="built-for">
           <div className="mx-auto max-w-[1200px] px-5 text-center sm:px-8">
-            <h2 id="built-for" className="mg-reveal text-h3 mx-auto max-w-[32ch] text-balance text-foreground">
+            <h2
+              id="built-for"
+              className="mg-reveal mx-auto max-w-[32ch] text-h3 text-balance text-foreground"
+            >
               Built for independent digital Creatives and technology professionals.
             </h2>
           </div>
@@ -162,10 +179,10 @@ export default function Home() {
               <span className="mg-pulse size-1.5 rounded-full bg-success" />
               Launch status
             </p>
-            <p className="text-h1 relative mx-auto mt-6 max-w-[20ch] text-balance">
+            <p className="relative mx-auto mt-6 max-w-[20ch] text-h1 text-balance">
               Modgeto is currently preparing for launch.
             </p>
-            <p className="text-body relative mx-auto mt-4 max-w-[48ch] text-foreground-secondary">
+            <p className="relative mx-auto mt-4 max-w-[48ch] text-body text-foreground-secondary">
               Services, Briefs and Project starts for independent Creatives.
             </p>
           </div>
@@ -210,8 +227,8 @@ function Feature({
         <span className="flex size-10 items-center justify-center rounded-lg bg-primary-subtle text-primary-text">
           {icon}
         </span>
-        <h3 className="text-h3 mt-5">{title}</h3>
-        <p className="text-body-sm mt-2 max-w-[44ch] text-foreground-secondary">{body}</p>
+        <h3 className="mt-5 text-h3">{title}</h3>
+        <p className="mt-2 max-w-[44ch] text-body-sm text-foreground-secondary">{body}</p>
       </div>
       <div aria-hidden className="mt-auto px-6 pb-6 sm:px-8 sm:pb-8">
         {visual}
@@ -239,7 +256,9 @@ function ServicesVisual() {
             <p className="text-caption text-foreground-muted">{p.name}</p>
             {p.selected && <Check className="size-3.5 text-primary-text" />}
           </div>
-          <p className="text-numeral mt-2 text-[1.05rem] text-foreground sm:text-[1.25rem]">{p.price}</p>
+          <p className="mt-2 text-[1.05rem] text-numeral text-foreground sm:text-[1.25rem]">
+            {p.price}
+          </p>
         </div>
       ))}
     </div>
@@ -247,11 +266,18 @@ function ServicesVisual() {
 }
 
 function BriefVisual() {
-  const questions = ["What does your business do?", "Which logo directions resonate?", "Any brand assets to share?"];
+  const questions = [
+    "What does your business do?",
+    "Which logo directions resonate?",
+    "Any brand assets to share?",
+  ];
   return (
     <ul className="grid gap-2">
       {questions.map((q, i) => (
-        <li key={q} className="flex items-center gap-3 rounded-lg border border-border bg-background px-3 py-2.5">
+        <li
+          key={q}
+          className="flex items-center gap-3 rounded-lg border border-border bg-background px-3 py-2.5"
+        >
           <span
             className={`flex size-5 shrink-0 items-center justify-center rounded-full ${
               i < 2 ? "bg-success-subtle text-success" : "border border-border-strong"
@@ -259,7 +285,7 @@ function BriefVisual() {
           >
             {i < 2 && <Check className="size-3" strokeWidth={3} />}
           </span>
-          <span className="text-body-sm truncate text-foreground-secondary">{q}</span>
+          <span className="truncate text-body-sm text-foreground-secondary">{q}</span>
         </li>
       ))}
     </ul>
@@ -279,7 +305,7 @@ function PricingVisual() {
       </div>
       <div className="mt-3 flex items-end justify-between border-t border-border pt-3">
         <span className="text-foreground-muted">Project total</span>
-        <span className="text-numeral text-[1.5rem] leading-none text-foreground">₦530,000</span>
+        <span className="text-[1.5rem] leading-none text-numeral text-foreground">₦530,000</span>
       </div>
       <p className="mt-3 flex items-center gap-2 text-caption text-foreground-muted">
         <ScrollText className="size-3.5" /> Terms reviewed before the Request is sent
@@ -293,7 +319,7 @@ function LinkVisual() {
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
       <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full border border-border bg-background px-4 py-3">
         <Link2 className="size-4 shrink-0 text-primary-text" />
-        <span className="text-body-sm truncate text-foreground-muted">
+        <span className="truncate text-body-sm text-foreground-muted">
           modgeto.com/<span className="font-medium text-foreground">your-name</span>
         </span>
       </div>
@@ -306,11 +332,14 @@ function LinkVisual() {
 
 function DisciplineList({ items, hidden = false }: { items: string[]; hidden?: boolean }) {
   return (
-    <ul aria-hidden={hidden || undefined} className={`flex shrink-0 gap-3 pr-3 ${hidden ? "mg-marquee-dup" : ""}`}>
+    <ul
+      aria-hidden={hidden || undefined}
+      className={`flex shrink-0 gap-3 pr-3 ${hidden ? "mg-marquee-dup" : ""}`}
+    >
       {items.map((d) => (
         <li
           key={d}
-          className="whitespace-nowrap rounded-full border border-border bg-surface px-4 py-2 text-body-sm text-foreground-secondary"
+          className="rounded-full border border-border bg-surface px-4 py-2 text-body-sm whitespace-nowrap text-foreground-secondary"
         >
           {d}
         </li>

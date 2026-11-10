@@ -318,6 +318,7 @@ components/
   payment/
   subscription/
   notifications/
+  marketing/     prelaunch and marketing pages only (D-033)
 
 features/
   auth/

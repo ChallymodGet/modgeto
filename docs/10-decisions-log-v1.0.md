@@ -346,6 +346,13 @@ A temporary prelaunch landing page is served at `/` to give Modgeto a legitimate
 - Decorative use of the brand gradient and motion is allowed on this page (Phase 08 §8 permits public decorative artwork). All motion respects `prefers-reduced-motion`.
 - Copy follows the Brand Guidelines. No waitlist, sign-up, or pricing claims beyond what is approved.
 
+### D-034 shadcn/ui primitive library and theming (10 November 2026)
+
+- shadcn/ui is initialised with **Base UI** (`@base-ui/react`, style `base-nova`), shadcn's current default. Radix and React Aria were the alternatives; revisit only if a required primitive is missing or fails accessibility testing.
+- shadcn variable names (`card`, `muted`, `accent`, `destructive`, `input`, `ring`, `popover`, `sidebar`) map onto the Phase 08 semantic tokens. shadcn's default neutral palette, chart colours (D-017 defers metrics) and `.dark` block are not used.
+- `--secondary` stays Electric Cyan as Phase 08 §5 defines. shadcn's `secondary` button variant is restyled in Phase 4 to the Phase 08 §7 secondary button (white, neutral border), not a cyan fill.
+- The radius scale stays 6/8/12/16px (D-032) rather than shadcn's calculated scale. Inter remains the only typeface.
+
 ---
 
 ## 6. Tracked Risks

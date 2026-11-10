@@ -3,7 +3,13 @@
 import type { ReactNode } from "react";
 
 /** Card with a pointer-following glow. The glow is decorative and hover-only. */
-export function SpotlightCard({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function SpotlightCard({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   return (
     <div
       onPointerMove={(e) => {
