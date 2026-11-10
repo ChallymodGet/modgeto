@@ -8,8 +8,12 @@ const inter = Inter({
   display: "swap",
 });
 
+// Public site address. Defaults to the Vercel URL until modgeto.com is registered;
+// set SITE_URL in Vercel to switch without a code change.
+const siteUrl = process.env.SITE_URL ?? "https://modgeto.vercel.app";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://modgeto.com"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Modgeto | One link to start working with you.",
     template: "%s | Modgeto",
@@ -19,7 +23,7 @@ export const metadata: Metadata = {
   applicationName: "Modgeto",
   openGraph: {
     type: "website",
-    url: "https://modgeto.com",
+    url: siteUrl,
     siteName: "Modgeto",
     title: "Modgeto | One link to start working with you.",
     description:
