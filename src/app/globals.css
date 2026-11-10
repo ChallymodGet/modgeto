@@ -1,0 +1,393 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Brand palette (docs/08 §2–4). Raw scales live here only; components
+   use the semantic tokens below.
+   ------------------------------------------------------------------ */
+@theme {
+  --color-primary-50: #f3f2ff;
+  --color-primary-100: #e8e6ff;
+  --color-primary-200: #d2ceff;
+  --color-primary-300: #aea7ff;
+  --color-primary-400: #8b80ff;
+  --color-primary-500: #635bff;
+  --color-primary-600: #5147e5;
+  --color-primary-700: #4238bf;
+  --color-primary-800: #372f99;
+  --color-primary-900: #2e287a;
+  --color-primary-950: #1b1748;
+
+  --color-secondary-50: #ecfeff;
+  --color-secondary-100: #cffafe;
+  --color-secondary-200: #a5f3fc;
+  --color-secondary-300: #67e8f9;
+  --color-secondary-400: #22d3ee;
+  --color-secondary-500: #06b6d4;
+  --color-secondary-600: #0891b2;
+  --color-secondary-700: #0e7490;
+
+  --color-tertiary-50: #fff4f1;
+  --color-tertiary-300: #ffa998;
+  --color-tertiary-400: #fb8975;
+  --color-tertiary-500: #f97360;
+  --color-tertiary-600: #e45745;
+
+  --color-neutral-0: #ffffff;
+  --color-neutral-25: #fcfcfd;
+  --color-neutral-50: #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-400: #94a3b8;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #475569;
+  --color-neutral-700: #334155;
+  --color-neutral-800: #1e293b;
+  --color-neutral-900: #0f172a;
+  --color-neutral-950: #020617;
+
+  /* Radius (docs/08 §12, usage per D-032) */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Shadows (docs/08 §14) */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.1);
+
+  /* Large desktop (docs/06 §10) */
+  --breakpoint-3xl: 1440px;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Semantic tokens (docs/08 §5). Light is the default everywhere. */
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-subtle: #f1f5f9;
+  --surface-elevated: #ffffff;
+  --foreground-secondary: #475569;
+  --foreground-muted: #64748b;
+  --foreground-disabled: #94a3b8;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --primary: #635bff;
+  --primary-hover: #5147e5;
+  --primary-pressed: #4238bf;
+  --primary-subtle: #f3f2ff;
+  --primary-foreground: #ffffff;
+  --primary-text: #5147e5;
+  --secondary: #06b6d4;
+  --secondary-subtle: #ecfeff;
+  --tertiary: #f97360;
+  --tertiary-subtle: #fff4f1;
+  --success: #16a34a;
+  --success-subtle: #f0fdf4;
+  --success-border: #bbf7d0;
+  --warning: #d97706;
+  --warning-subtle: #fffbeb;
+  --warning-border: #fde68a;
+  --danger: #dc2626;
+  --danger-subtle: #fef2f2;
+  --danger-border: #fecaca;
+  --info: #2563eb;
+  --info-subtle: #eff6ff;
+  --info-border: #bfdbfe;
+  --focus: #635bff;
+
+  /* Marketing-only decorative values */
+  --glow-a: rgba(99, 91, 255, 0.18);
+  --glow-b: rgba(6, 182, 212, 0.14);
+  --grid-line: rgba(15, 23, 42, 0.05);
+  --headline-gradient: linear-gradient(120deg, #635bff 0%, #8b80ff 45%, #0891b2 100%);
+}
+
+/* Dark theme: marketing pages only (D-033). The product app never renders .marketing. */
+:root[data-theme="dark"] .marketing {
+  --background: #05060f;
+  --foreground: #f8fafc;
+  --surface: #0d1022;
+  --surface-subtle: #151a30;
+  --surface-elevated: #12162b;
+  --foreground-secondary: #cbd5e1;
+  --foreground-muted: #94a3b8;
+  --foreground-disabled: #64748b;
+  --border: rgba(148, 163, 184, 0.16);
+  --border-strong: rgba(148, 163, 184, 0.28);
+  --primary-subtle: rgba(99, 91, 255, 0.16);
+  --primary-text: #aea7ff;
+  --secondary-subtle: rgba(6, 182, 212, 0.14);
+  --tertiary-subtle: rgba(249, 115, 96, 0.14);
+  --success: #4ade80;
+  --success-subtle: rgba(22, 163, 74, 0.16);
+  --success-border: rgba(74, 222, 128, 0.3);
+  --focus: #aea7ff;
+
+  --glow-a: rgba(99, 91, 255, 0.32);
+  --glow-b: rgba(6, 182, 212, 0.2);
+  --grid-line: rgba(248, 250, 252, 0.05);
+  --headline-gradient: linear-gradient(120deg, #aea7ff 0%, #8b80ff 40%, #67e8f9 100%);
+}
+
+:root[data-theme="dark"]:has(.marketing) {
+  color-scheme: dark;
+  background: #05060f;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-disabled: var(--foreground-disabled);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-pressed: var(--primary-pressed);
+  --color-primary-subtle: var(--primary-subtle);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-text: var(--primary-text);
+  --color-secondary: var(--secondary);
+  --color-secondary-subtle: var(--secondary-subtle);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-subtle: var(--tertiary-subtle);
+  --color-success: var(--success);
+  --color-success-subtle: var(--success-subtle);
+  --color-success-border: var(--success-border);
+  --color-warning: var(--warning);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-danger: var(--danger);
+  --color-danger-subtle: var(--danger-subtle);
+  --color-info: var(--info);
+  --color-info-subtle: var(--info-subtle);
+  --color-focus: var(--focus);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ------------------------------------------------------------------
+   Typography roles (docs/07 §11). Sizes set in code per docs/07 §55.
+   ------------------------------------------------------------------ */
+@utility text-display {
+  font-size: clamp(2.5rem, 1.6rem + 4.2vw, 4.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  font-weight: 600;
+}
+@utility text-h1 {
+  font-size: clamp(2rem, 1.5rem + 2vw, 2.75rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+@utility text-h2 {
+  font-size: clamp(1.625rem, 1.3rem + 1.4vw, 2.25rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+@utility text-h3 {
+  font-size: 1.25rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+@utility text-h4 {
+  font-size: 1rem;
+  line-height: 1.4;
+  font-weight: 600;
+}
+@utility text-body-lg {
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+@utility text-body {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+@utility text-body-sm {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+@utility text-label {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  font-weight: 500;
+}
+@utility text-caption {
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+/* Large light numerals for counts and prices (D-031) */
+@utility text-numeral {
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Marketing motion. Every animation is disabled under reduced motion.
+   ------------------------------------------------------------------ */
+@keyframes mg-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(3%, -4%, 0) scale(1.08); }
+}
+@keyframes mg-rise {
+  from { opacity: 0; transform: translateY(16px); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes mg-marquee {
+  to { transform: translateX(-50%); }
+}
+@keyframes mg-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.45); }
+  70% { box-shadow: 0 0 0 8px rgba(22, 163, 74, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+}
+@keyframes mg-caret {
+  50% { opacity: 0; }
+}
+@keyframes mg-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes mg-sheen {
+  to { background-position: 200% center; }
+}
+
+.mg-rise {
+  animation: mg-rise 0.9s var(--ease-out-soft) both;
+}
+.mg-drift {
+  animation: mg-drift 18s ease-in-out infinite;
+}
+.mg-float {
+  animation: mg-float 6s ease-in-out infinite;
+}
+.mg-pulse {
+  animation: mg-pulse 2s ease-out infinite;
+}
+.mg-caret {
+  animation: mg-caret 1s steps(1) infinite;
+}
+.mg-marquee {
+  animation: mg-marquee 40s linear infinite;
+}
+.mg-marquee-wrap:hover .mg-marquee,
+.mg-marquee-wrap:focus-within .mg-marquee {
+  animation-play-state: paused;
+}
+.mg-headline-gradient {
+  background-image: var(--headline-gradient);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: mg-sheen 8s linear infinite;
+}
+.mg-grid {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
+}
+
+/* Theme toggle: show the action for the opposite theme. */
+.theme-icon-sun,
+.theme-label-to-light {
+  display: none;
+}
+:root[data-theme="dark"] .theme-icon-sun,
+:root[data-theme="dark"] .theme-label-to-light {
+  display: block;
+}
+:root[data-theme="dark"] .theme-icon-moon,
+:root[data-theme="dark"] .theme-label-to-dark {
+  display: none;
+}
+
+/* Scroll reveal: visible by default, animated only where supported. */
+@supports (animation-timeline: view()) {
+  .mg-reveal {
+    animation: mg-rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+}
+
+/* Spotlight card: pointer position is written to --mx / --my. */
+.mg-spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.mg-spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(
+    420px circle at var(--mx, 50%) var(--my, -20%),
+    var(--glow-a),
+    transparent 45%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.mg-spotlight:hover::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mg-rise,
+  .mg-drift,
+  .mg-float,
+  .mg-pulse,
+  .mg-caret,
+  .mg-marquee,
+  .mg-headline-gradient,
+  .mg-reveal {
+    animation: none !important;
+  }
+  .mg-marquee-track {
+    width: auto !important;
+    justify-content: center;
+  }
+  .mg-marquee-track > ul {
+    flex-wrap: wrap;
+    flex-shrink: 1;
+    justify-content: center;
+    padding-inline: 20px;
+  }
+  .mg-marquee-dup {
+    display: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
