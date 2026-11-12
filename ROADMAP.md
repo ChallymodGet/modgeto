@@ -58,51 +58,51 @@ Source: doc 08, doc 07 §7–18, CLAUDE.md §11.
 Pure TypeScript with no React and no I/O. Every module ships with Vitest tests.
 
 ### 2a. Money
-- [ ] `Money { amountMinor: bigint; currency }` for NGN, USD, GBP, and EUR (D-013). Add, subtract, compare, and multiply by an integer.
-- [ ] Percentage of an amount with round-half-up at the line where it's applied (D-012).
-- [ ] Formatting with `Intl` (₦150,000, +₦80,000, and so on) and parsing of form input into minor units.
-- [ ] Serialization helpers so a bigint can cross Zod, forms, JSON, and the database.
+- [x] `Money { amountMinor: bigint; currency }` for NGN, USD, GBP, and EUR (D-013). Add, subtract, compare, and multiply by an integer.
+- [x] Percentage of an amount with round-half-up at the line where it's applied (D-012).
+- [x] Formatting with `Intl` (₦150,000, +₦80,000, and so on) and parsing of form input into minor units.
+- [x] Serialization helpers so a bigint can cross Zod, forms, JSON, and the database.
 
 ### 2b. Pricing engine
-- [ ] Pricing modes: FIXED, STARTING_FROM, QUANTITY, PACKAGE, CUSTOM_QUOTE.
-- [ ] Line items: base or package, then quantity items, add-ons (with quantity), paid options, and the delivery modifier, which can be fixed or a percentage of the subtotal before delivery (D-010).
-- [ ] Discount (in proposals only, D-011) and additional charges (Service level and proposal), giving the Final Total, which can't go below zero.
-- [ ] Commitment as a percentage of the Final Total (D-012).
-- [ ] Outstanding balance: total minus confirmed payments.
-- [ ] Price state output: Calculated, Estimated, or Quote Required.
-- [ ] Validation: quantity min/max, required option groups, single vs multiple selection, and prerequisite dependencies with an "Add prerequisite" hint.
+- [x] Pricing modes: FIXED, STARTING_FROM, QUANTITY, PACKAGE, CUSTOM_QUOTE.
+- [x] Line items: base or package, then quantity items, add-ons (with quantity), paid options, and the delivery modifier, which can be fixed or a percentage of the subtotal before delivery (D-010).
+- [x] Discount (in proposals only, D-011) and additional charges (Service level and proposal), giving the Final Total, which can't go below zero.
+- [x] Commitment as a percentage of the Final Total (D-012).
+- [x] Outstanding balance: total minus confirmed payments.
+- [x] Price state output: Calculated, Estimated, or Quote Required.
+- [x] Validation: quantity min/max, required option groups, single vs multiple selection, and prerequisite dependencies with an "Add prerequisite" hint.
 
 ### 2c. Subscription capacity
-- [ ] The D-001 price table exactly as written. Tests must assert that 5 < 4 and 10 < 9.
-- [ ] Capacity consumption: PUBLISHED and UNAVAILABLE use a slot.
-- [ ] The free-Service rule and the deterministic fallback in D-016.
-- [ ] Downgrade allocation and upgrade/downgrade timing (D-015): upgrade is immediate with no proration, downgrade is scheduled, past due gets a 7-day grace period.
+- [x] The D-001 price table exactly as written. Tests must assert that 5 < 4 and 10 < 9.
+- [x] Capacity consumption: PUBLISHED and UNAVAILABLE use a slot.
+- [x] The free-Service rule and the deterministic fallback in D-016.
+- [x] Downgrade allocation and upgrade/downgrade timing (D-015): upgrade is immediate with no proration, downgrade is scheduled, past due gets a 7-day grace period.
 
 ### 2d. State machines (transition, actor guard, preconditions)
-- [ ] User account: PENDING_VERIFICATION, ACTIVE, SUSPENDED, DELETION_PENDING.
-- [ ] Service lifecycle, plus the moderation overlay (D-003) and unpublish returning to DRAFT (D-005).
-- [ ] Request: the full D-007 status set including `AWAITING_TERMS` (D-006) and the `AWAITING_CLIENT` sub-types.
-- [ ] CommercialProposal: PROPOSED, then ACCEPTED, REJECTED, SUPERSEDED, or EXPIRED, with quote validity (D-017).
-- [ ] Project: ACTIVE to COMPLETED, Creative only.
-- [ ] Subscription: FREE, ACTIVE, PAST_DUE, EXPIRED, CANCELLED.
+- [x] User account: PENDING_VERIFICATION, ACTIVE, SUSPENDED, DELETION_PENDING.
+- [x] Service lifecycle, plus the moderation overlay (D-003) and unpublish returning to DRAFT (D-005).
+- [x] Request: the full D-007 status set including `AWAITING_TERMS` (D-006) and the `AWAITING_CLIENT` sub-types.
+- [x] CommercialProposal: PROPOSED, then ACCEPTED, REJECTED, SUPERSEDED, or EXPIRED, with quote validity (D-017).
+- [x] Project: ACTIVE to COMPLETED, Creative only.
+- [x] Subscription: FREE, ACTIVE, PAST_DUE, EXPIRED, CANCELLED.
 
 ### 2e. Policies and derivations
-- [ ] `canAcceptNewRequest` (LIMITED doesn't block) and `canGoPublic`.
-- [ ] Publish validation that returns blockers mapped to Builder sections.
-- [ ] `readyToStart` derivation, commitment satisfaction (only confirmed amounts count), and the final-terms rule (D-002).
-- [ ] Brief validation: one-level conditions, hidden questions never block, visible required questions must be answered.
-- [ ] Username rules (PROF-003) and the reserved-word blocklist (D-021).
-- [ ] File rules (D-018).
-- [ ] A Creative can't request their own Service, and a suspended user can't take protected actions.
+- [x] `canAcceptNewRequest` (LIMITED doesn't block) and `canGoPublic`.
+- [x] Publish validation that returns blockers mapped to Builder sections.
+- [x] `readyToStart` derivation, commitment satisfaction (only confirmed amounts count), and the final-terms rule (D-002).
+- [x] Brief validation: one-level conditions, hidden questions never block, visible required questions must be answered.
+- [x] Username rules (PROF-003) and the reserved-word blocklist (D-021).
+- [x] File rules (D-018).
+- [x] A Creative can't request their own Service, and a suspended user can't take protected actions.
 
 ### 2f. Actor-facing status language
-- [ ] Map domain statuses to Creative and Client labels and groupings (doc 04 §46–47, revised by D-006 and D-007).
-- [ ] Map each status to a StatusBadge intent (doc 08 §15).
+- [x] Map domain statuses to Creative and Client labels and groupings (doc 04 §46–47, revised by D-006 and D-007).
+- [x] Map each status to a StatusBadge intent (doc 08 §15).
 
 ### 2g. Scenario tests
-- [ ] Every scenario in doc 03 §78–92, using the D-001 prices.
+- [x] Every scenario in doc 03 §78–92, using the D-001 prices.
 
-**Exit:** domain coverage close to 100%, and every invariant in doc 03 §03P has a test.
+**Exit:** domain coverage close to 100%, and every invariant in doc 03 §03P has a test. **Met 10 Nov 2026:** 161 tests, ~96% line coverage (`pnpm test:coverage`). Code in `src/lib/domain/`.
 
 ---
 
@@ -284,3 +284,5 @@ The order follows CLAUDE.md §20. Rows marked ➕ are screens from the doc 06 in
 | Q10 | What is the retention and anonymisation policy for account deletion (AUTH-008)? | Phase 9 |
 | Q11 | What goes in Admin Platform Settings? | Phase 7.18 |
 | Q12 | Should we add Playwright for end-to-end tests? It isn't in the locked stack. | Phase 14 |
+| ~~Q13~~ | Resolved: D-035 (Request status after a rejected proposal). | — |
+| ~~Q14~~ | Resolved: D-036 (valid scope = at least one deliverable; Custom Quote exempt). | — |

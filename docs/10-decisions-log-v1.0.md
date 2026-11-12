@@ -353,6 +353,18 @@ A temporary prelaunch landing page is served at `/` to give Modgeto a legitimate
 - `--secondary` stays Electric Cyan as Phase 08 §5 defines. shadcn's `secondary` button variant is restyled in Phase 4 to the Phase 08 §7 secondary button (white, neutral border), not a cyan fill.
 - The radius scale stays 6/8/12/16px (D-032) rather than shadcn's calculated scale. Inter remains the only typeface.
 
+### D-035 Request status after a proposal is rejected (approved 12 November 2026)
+
+Follows the D-027 principle (status shows the commercial position).
+
+- **No earlier agreement:** the Request returns to `SUBMITTED`. It is the Creative's turn to revise the proposal or decline.
+- **An earlier agreement exists** (a proposal sent after agreement, D-030): the earlier agreement still stands and the status is re-derived from it (terms, commitment, Ready to Start).
+- The rejected proposal is recorded as `REJECTED` and stays in the proposal history.
+
+### D-036 "Valid scope" for publishing (approved 12 November 2026)
+
+PRD SRV-004 requires a valid scope. A Service's scope is valid when it lists **at least one deliverable**. Custom Quote Services are exempt, because their scope is set in the Creative's proposal.
+
 ---
 
 ## 6. Tracked Risks
