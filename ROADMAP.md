@@ -142,7 +142,7 @@ Source: doc 07 §21–23.
 
 Each component must pass the CLAUDE.md §17 component gate before it's used in a screen.
 
-**Done 13 Nov 2026.** shadcn/ui on Base UI, restyled to the doc 08 tokens in `src/components/ui`. FormField is built on Base UI Field. Dialogs become bottom sheets and Sheets become full screen on phones. SelectionCard sits on a real radio or checkbox group. Overlays were checked in Chrome at 390px and 1366px: no sideways scroll, focus trapped, Escape closes, focus returned. `/dev/components` returns 404 in production unless `ENABLE_DEV_ROUTES=true`. D-037 (status text tokens) and D-038 (optional-field marking) await confirmation.
+**Done 13 Nov 2026.** shadcn/ui on Base UI, restyled to the doc 08 tokens in `src/components/ui`. FormField is built on Base UI Field. Dialogs become bottom sheets and Sheets become full screen on phones. SelectionCard sits on a real radio or checkbox group. Overlays were checked in Chrome at 390px and 1366px: no sideways scroll, focus trapped, Escape closes, focus returned. `/dev/components` returns 404 in production unless `ENABLE_DEV_ROUTES=true`. D-037 (status text and control border tokens) and D-038 (optional-field marking) approved 13 Nov 2026.
 
 ---
 
