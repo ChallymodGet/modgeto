@@ -59,3 +59,50 @@ export function toServiceForPublish(
     selectedPaymentMethodCount: service.paymentMethodIds.length,
   };
 }
+
+/**
+ * The headline price a Service shows before configuration (docs/06 §23):
+ * exact for Fixed, an estimate for Starting From, the lowest package for
+ * Packages, a unit price for Quantity, and no number for Custom Quote (PRC-006).
+ */
+export type ServicePriceSummary =
+  | { kind: "EXACT"; amountMinor: bigint }
+  | { kind: "STARTING_FROM"; amountMinor: bigint }
+  | { kind: "PACKAGES_FROM"; amountMinor: bigint }
+  | { kind: "PER_UNIT"; amountMinor: bigint; unitName: string; minimum: number }
+  | { kind: "QUOTE" };
+
+export function servicePriceSummary(
+  service: Pick<Service, "pricingMode" | "baseAmountMinor" | "packages" | "quantityRules">,
+): ServicePriceSummary {
+  switch (service.pricingMode) {
+    case "FIXED":
+      return service.baseAmountMinor === null
+        ? { kind: "QUOTE" }
+        : { kind: "EXACT", amountMinor: service.baseAmountMinor };
+    case "STARTING_FROM":
+      return service.baseAmountMinor === null
+        ? { kind: "QUOTE" }
+        : { kind: "STARTING_FROM", amountMinor: service.baseAmountMinor };
+    case "PACKAGE": {
+      const lowest = service.packages.reduce<bigint | null>(
+        (min, p) => (min === null || p.amountMinor < min ? p.amountMinor : min),
+        null,
+      );
+      return lowest === null ? { kind: "QUOTE" } : { kind: "PACKAGES_FROM", amountMinor: lowest };
+    }
+    case "QUANTITY": {
+      const rule = service.quantityRules[0];
+      return rule
+        ? {
+            kind: "PER_UNIT",
+            amountMinor: rule.unitAmountMinor,
+            unitName: rule.unitName,
+            minimum: rule.minimum,
+          }
+        : { kind: "QUOTE" };
+    }
+    case "CUSTOM_QUOTE":
+      return { kind: "QUOTE" };
+  }
+}

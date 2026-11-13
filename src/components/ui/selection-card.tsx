@@ -29,8 +29,8 @@ type BaseGroupProps = {
   error?: string | null;
   optional?: boolean;
   hideLegend?: boolean;
-  /** Columns from `md`. Cards always stack on phones. */
-  columns?: 1 | 2 | 3;
+  /** Columns from `md`. Cards stack on phones, except `5`: compact cards, two per row on phones. */
+  columns?: 1 | 2 | 3 | 5;
   disabled?: boolean;
   name?: string;
   className?: string;
@@ -53,7 +53,14 @@ type SelectionCardGroupProps = BaseGroupProps &
       }
   );
 
-const columnClasses = { 1: "", 2: "md:grid-cols-2", 3: "md:grid-cols-2 lg:grid-cols-3" };
+// Container queries, not viewport breakpoints: a group inside a narrow panel
+// (e.g. beside a sticky summary) keeps cards readable at any screen width.
+const columnClasses = {
+  1: "",
+  2: "@lg:grid-cols-2",
+  3: "@lg:grid-cols-2 @3xl:grid-cols-3",
+  5: "grid-cols-2 @lg:grid-cols-3 @3xl:grid-cols-5",
+};
 
 function SelectionCardGroup(props: SelectionCardGroupProps) {
   const {
@@ -80,29 +87,31 @@ function SelectionCardGroup(props: SelectionCardGroupProps) {
       className={className}
     >
       <GroupTypeContext.Provider value={props.type ?? "single"}>
-        {props.type === "multiple" ? (
-          <CheckboxGroup
-            value={props.value}
-            defaultValue={props.defaultValue}
-            onValueChange={(v) => props.onValueChange?.(v as string[])}
-            disabled={disabled}
-            className={grid}
-          >
-            {children}
-          </CheckboxGroup>
-        ) : (
-          <RadioGroup
-            value={props.value}
-            defaultValue={props.defaultValue}
-            onValueChange={(v) => props.onValueChange?.(v as string)}
-            disabled={disabled}
-            name={name}
-            aria-invalid={error ? true : undefined}
-            className={grid}
-          >
-            {children}
-          </RadioGroup>
-        )}
+        <div className="@container">
+          {props.type === "multiple" ? (
+            <CheckboxGroup
+              value={props.value}
+              defaultValue={props.defaultValue}
+              onValueChange={(v) => props.onValueChange?.(v as string[])}
+              disabled={disabled}
+              className={grid}
+            >
+              {children}
+            </CheckboxGroup>
+          ) : (
+            <RadioGroup
+              value={props.value}
+              defaultValue={props.defaultValue}
+              onValueChange={(v) => props.onValueChange?.(v as string)}
+              disabled={disabled}
+              name={name}
+              aria-invalid={error ? true : undefined}
+              className={grid}
+            >
+              {children}
+            </RadioGroup>
+          )}
+        </div>
       </GroupTypeContext.Provider>
     </FormFieldset>
   );

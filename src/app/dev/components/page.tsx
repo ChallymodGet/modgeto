@@ -1,3 +1,4 @@
+import NextLink from "next/link";
 import { ActionsDemo } from "./_demos/actions";
 import { DisplayDemo } from "./_demos/display";
 import { FormsDemo } from "./_demos/forms";
@@ -30,6 +31,12 @@ export default function ComponentsPage() {
             Generic UI primitives on Base UI, themed with the Modgeto tokens. Check every component
             at phone, tablet and desktop widths, with the keyboard only.
           </p>
+          <NextLink
+            href="/dev/components/product"
+            className="w-fit text-label text-primary-text underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+          >
+            Product components →
+          </NextLink>
         </div>
       </header>
       <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)] gap-10 px-4 py-10 md:px-8 lg:grid-cols-[200px_minmax(0,1fr)]">

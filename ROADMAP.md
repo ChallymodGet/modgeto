@@ -168,14 +168,16 @@ Each component must pass the CLAUDE.md §17 component gate before it's used in a
 
 Every component gets a showcase entry. Doc 07 §24–30 has the full list.
 
-- [ ] **service:** ServiceCard, ServiceStatusBadge, PackageCard and PackageSelector, DeliverableList, AddOnCard and AddOnSelector, OptionGroup and OptionCard, QuantityControl, DeliveryOption, and RevisionSummary.
-- [ ] **pricing:** MoneyDisplay, PriceModifier, PriceBreakdown, EstimatedPrice, PriceDifference, and CommitmentSummary. CLAUDE.md §15 has no `pricing/` folder, so these go under `service/` unless we add one.
-- [ ] **brief:** BriefSection, BriefProgress, QuestionRenderer, the question type components, and FileUploader (UI only: progress, retry, remove).
-- [ ] **request:** RequestCard, RequestStatus, RequestSummary, ScopeSummary, ProposalCard, ProposalComparison, ClarificationPanel, and TermsPanel.
-- [ ] **payment:** PaymentInstructions (always states that Modgeto doesn't collect Client Project payments), PaymentDeclarationForm, PaymentConfirmationForm, PaymentRecord, and CommitmentProgress.
-- [ ] **subscription:** CapacitySelector (shows both discount points), CapacityUsage, CapacityPrice, ServiceAllocation, and SubscriptionStatus.
-- [ ] **project:** ProjectCard.
-- [ ] **notifications:** AttentionItem, NotificationItem, and StatusTimeline.
+- [x] **service:** ServiceCard, ServiceStatusBadge, PackageCard and PackageSelector, DeliverableList, AddOnCard and AddOnSelector, OptionGroup and OptionCard, QuantityControl, DeliveryOption, and RevisionSummary.
+- [x] **pricing:** MoneyDisplay, PriceModifier, PriceBreakdown, EstimatedPrice, PriceDifference, and CommitmentSummary. CLAUDE.md §15 has no `pricing/` folder, so these go under `service/` unless we add one.
+- [x] **brief:** BriefSection, BriefProgress, QuestionRenderer, the question type components, and FileUploader (UI only: progress, retry, remove).
+- [x] **request:** RequestCard, RequestStatus, RequestSummary, ScopeSummary, ProposalCard, ProposalComparison, ClarificationPanel, and TermsPanel.
+- [x] **payment:** PaymentInstructions (always states that Modgeto doesn't collect Client Project payments), PaymentDeclarationForm, PaymentConfirmationForm, PaymentRecord, and CommitmentProgress.
+- [x] **subscription:** CapacitySelector (shows both discount points), CapacityUsage, CapacityPrice, ServiceAllocation, and SubscriptionStatus.
+- [x] **project:** ProjectCard.
+- [x] **notifications:** AttentionItem, NotificationItem, and StatusTimeline.
+
+**Done 13 Nov 2026.** About 45 components in `src/components/{service,brief,request,payment,subscription,project,notifications}`. The pricing components live in `service/price.tsx`. They're shown with fixture data at `/dev/components/product`. Formatting helpers are in `lib/format.ts`, and the headline-price logic is `servicePriceSummary`, both tested. Forms use React Hook Form with the shared Zod schemas. Selection grids size to their container, so they stay readable inside narrow panels. Checked in Chrome at 390px and 1366px: no sideways scroll, Brief validation moves focus to the first problem, the conditional question appears, uploads show progress and retry, the capacity cards work with the arrow keys, and no console errors.
 
 ---
 
