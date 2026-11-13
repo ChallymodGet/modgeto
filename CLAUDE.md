@@ -353,7 +353,7 @@ Avoid an unstructured single components folder.
 Usernames live at the root (`/charles`, `/charles/brand-identity`). Application areas use reserved prefixes:
 
 ```text
-/app     Creative and Client workspaces
+/app     Creative and Client workspaces (/app/creative, /app/client; D-039)
 /admin   Admin workspace
 /auth    Authentication and verification
 /dev     Protected component showcase

@@ -14,7 +14,7 @@ type ErrorStateProps = {
   retrying?: boolean;
   /** Extra actions, such as a link back. */
   actions?: ReactNode;
-  headingLevel?: "h2" | "h3";
+  headingLevel?: "h1" | "h2" | "h3";
   /** `inline` is a compact banner inside a section. */
   variant?: "block" | "inline";
   className?: string;

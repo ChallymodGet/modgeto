@@ -13,7 +13,7 @@ import type { ReactNode } from "react";
 import { HeroPreview } from "@/components/marketing/hero-preview";
 import { SpotlightCard } from "@/components/marketing/spotlight-card";
 import { ThemeScript, ThemeToggle } from "@/components/marketing/theme";
-import { Wordmark } from "@/components/marketing/wordmark";
+import { Wordmark } from "@/components/layout/wordmark";
 
 const disciplines = [
   "Brand Identity Designers",

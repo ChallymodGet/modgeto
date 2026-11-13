@@ -384,6 +384,23 @@ Text fields, selects and number fields use a new `--border-control` (#7C8AA0: 3.
 
 Most V1 form fields are required, so only optional fields are marked visibly, with "Optional" beside the label. Required fields carry `aria-required` and are not marked with an asterisk. This applies to Brief questions too: a question the Creative marks optional shows "Optional" (doc 01, Required and Optional fields).
 
+### D-039 Workspace routes (implementation ruling, 13 November 2026)
+
+Refines D-021, which places both workspaces under `/app` without separating them. A person can hold both roles and see the same Request from either side, so each workspace gets its own prefix:
+
+```text
+/app                 opens the Creative workspace if the user has one, otherwise the Client workspace
+/app/creative/...    Dashboard, requests, services, projects, profile, subscription, settings, notifications
+/app/client/...      Home, requests, projects, account, notifications
+/app/onboarding      Become a Creative
+```
+
+Storefront configuration lives under the Service link: `/[username]/[serviceSlug]/configure`, `/brief`, `/review` and `/submitted`.
+
+### D-040 Unfinished product areas stay private until launch (implementation ruling, 13 November 2026)
+
+Until the product launches, `/app`, `/admin`, `/auth`, the `/[username]` storefronts and `/dev` return Not Found in production builds unless `ENABLE_DEV_ROUTES=true`. Development servers always serve them. The prelaunch landing page (D-033) stays public. Removing this gate is a launch task (Phase 15).
+
 ---
 
 ## 6. Tracked Risks

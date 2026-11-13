@@ -9,7 +9,7 @@ type EmptyStateProps = {
   description?: ReactNode;
   /** One primary action, optionally followed by a secondary one. */
   actions?: ReactNode;
-  headingLevel?: "h2" | "h3";
+  headingLevel?: "h1" | "h2" | "h3";
   /** `bordered` sits inside a page; `plain` sits inside an existing card. */
   variant?: "bordered" | "plain";
   className?: string;

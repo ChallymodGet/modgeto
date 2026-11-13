@@ -38,6 +38,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
+  // Lets env(safe-area-inset-*) clear the notch and home indicator.
+  viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
     { media: "(prefers-color-scheme: dark)", color: "#05060f" },

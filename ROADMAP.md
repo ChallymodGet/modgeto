@@ -148,17 +148,19 @@ Each component must pass the CLAUDE.md §17 component gate before it's used in a
 
 ## Phase 5: Layout shells and route skeleton
 
-- [ ] Shells per D-031: PublicLayout, AuthLayout, CreativeAppShell (top pill bar on desktop; bottom nav plus a More sheet on tablet and mobile), ClientAppShell (top pill bar on desktop and tablet; bottom nav on mobile), AdminAppShell (sidebar), BuilderShell, and ConfigurationShell.
-- [ ] SectionSidebar for pages with sub-navigation (Requests groupings with counts, Builder sections, Settings, Account).
-- [ ] Supporting layout: PageContainer, PageHeader, Section, SectionHeader, FormContainer, DashboardGrid, SplitLayout, StickySummary, and BottomActionBar.
-- [ ] Route tree:
+- [x] Shells per D-031: PublicLayout, AuthLayout, CreativeAppShell (top pill bar on desktop; bottom nav plus a More sheet on tablet and mobile), ClientAppShell (top pill bar on desktop and tablet; bottom nav on mobile), AdminAppShell (sidebar), BuilderShell, and ConfigurationShell.
+- [x] SectionSidebar for pages with sub-navigation (Requests groupings with counts, Builder sections, Settings, Account).
+- [x] Supporting layout: PageContainer, PageHeader, Section, SectionHeader, FormContainer, DashboardGrid, SplitLayout, StickySummary, and BottomActionBar.
+- [x] Route tree:
   - `/[username]` and `/[username]/[serviceSlug]`, plus the configure, brief, and review steps
   - `/auth/*`
   - `/app/*` for the Creative and Client workspaces
   - `/admin/*`
   - `/dev/*`
-- [ ] Workspace switcher and account menu (Client-only users see "Become a Creative").
-- [ ] Global not-found, error, permission-denied, and resource-unavailable pages.
+- [x] Workspace switcher and account menu (Client-only users see "Become a Creative").
+- [x] Global not-found, error, permission-denied, and resource-unavailable pages.
+
+**Done 13 Nov 2026.** Shells and layout components in `src/components/layout`. 60 routes, each with a placeholder that names the Phase 7 screen and its spec. Workspaces at `/app/creative` and `/app/client` (D-039). Unfinished areas are private in production (D-040). The fixture viewer is in `features/auth/viewer.ts` until Phase 9. Checked in Chrome at 390, 820 and 1366px: no sideways scroll, skip link first in tab order, More drawer, account menu and Admin menu all working.
 
 ---
 
