@@ -365,6 +365,25 @@ Follows the D-027 principle (status shows the commercial position).
 
 PRD SRV-004 requires a valid scope. A Service's scope is valid when it lists **at least one deliverable**. Custom Quote Services are exempt, because their scope is set in the Creative's proposal.
 
+### D-037 Accessible text on status colours (implementation ruling, 13 November 2026; awaiting confirmation)
+
+Phase 08 §4–5 semantic colours fail WCAG 2.2 AA (4.5:1) as small text on their own subtle backgrounds: Success 3.15:1 and Warning 3.07:1. Badges, banners and inline messages therefore use a darker text step from the same hue. The background, border and icon colours are unchanged.
+
+| Token | Value | Contrast on its subtle background |
+|---|---|---:|
+| `--success-text` | #15803D | 4.79:1 |
+| `--warning-text` | #B45309 | 4.84:1 |
+| `--danger-text` | #B91C1C | 5.91:1 |
+| `--info-text` | #1D4ED8 | 6.16:1 |
+
+Unselected checkbox, radio and switch boundaries use Muted Text (#64748B, 4.76:1 on white), so the control itself meets the 3:1 non-text contrast requirement (SC 1.4.11).
+
+Text fields, selects and number fields use a new `--border-control` (#7C8AA0: 3.5:1 on white, 3.35:1 on Background) instead of Strong Border (#CBD5E1, 1.48:1). Phase 08 §12–13 asked for Strong Border on inputs, but at 1.48:1 the field boundary fails SC 1.4.11. Strong Border stays for decorative and structural borders, and for secondary buttons, whose text identifies them. Modal backdrops use `--overlay` (Slate 900 at 40%).
+
+### D-038 Marking required and optional fields (implementation ruling, 13 November 2026; awaiting confirmation)
+
+Most V1 form fields are required, so only optional fields are marked visibly, with "Optional" beside the label. Required fields carry `aria-required` and are not marked with an asterisk. This applies to Brief questions too: a question the Creative marks optional shows "Optional" (doc 01, Required and Optional fields).
+
 ---
 
 ## 6. Tracked Risks

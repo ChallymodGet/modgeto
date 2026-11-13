@@ -131,16 +131,18 @@ Pure TypeScript with no React and no I/O. Every module ships with Vitest tests.
 
 Source: doc 07 §21–23.
 
-- [ ] Button, IconButton, Link, Input, Textarea, NumberInput, Select, Checkbox, RadioGroup, and Switch.
-- [ ] FormField, which centrally handles labels, description and error IDs, `aria-invalid`, and the required state.
-- [ ] Badge, StatusBadge, Avatar, and Card.
-- [ ] Dialog, Drawer, and Sheet (a drawer on desktop becomes a full-screen sheet on mobile), with focus trap, Escape to close, and focus returned on close.
-- [ ] Tabs, SectionNavigation, DropdownMenu, Popover, Command, Tooltip, and Toast.
-- [ ] Skeleton, EmptyState, and ErrorState.
-- [ ] A SelectionCard base: a real radio or checkbox underneath, and a selected state that doesn't rely on colour alone.
-- [ ] `/dev/components` route, returning not-found in production unless explicitly enabled.
+- [x] Button, IconButton, Link, Input, Textarea, NumberInput, Select, Checkbox, RadioGroup, and Switch.
+- [x] FormField, which centrally handles labels, description and error IDs, `aria-invalid`, and the required state.
+- [x] Badge, StatusBadge, Avatar, and Card.
+- [x] Dialog, Drawer, and Sheet (a drawer on desktop becomes a full-screen sheet on mobile), with focus trap, Escape to close, and focus returned on close.
+- [x] Tabs, SectionNavigation, DropdownMenu, Popover, Command, Tooltip, and Toast.
+- [x] Skeleton, EmptyState, and ErrorState.
+- [x] A SelectionCard base: a real radio or checkbox underneath, and a selected state that doesn't rely on colour alone.
+- [x] `/dev/components` route, returning not-found in production unless explicitly enabled.
 
 Each component must pass the CLAUDE.md §17 component gate before it's used in a screen.
+
+**Done 13 Nov 2026.** shadcn/ui on Base UI, restyled to the doc 08 tokens in `src/components/ui`. FormField is built on Base UI Field. Dialogs become bottom sheets and Sheets become full screen on phones. SelectionCard sits on a real radio or checkbox group. Overlays were checked in Chrome at 390px and 1366px: no sideways scroll, focus trapped, Escape closes, focus returned. `/dev/components` returns 404 in production unless `ENABLE_DEV_ROUTES=true`. D-037 (status text tokens) and D-038 (optional-field marking) await confirmation.
 
 ---
 

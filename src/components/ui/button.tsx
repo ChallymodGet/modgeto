@@ -1,57 +1,107 @@
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "cn";
+import { cn } from "@/lib/utils";
+import NextLink from "next/link";
+import type { ComponentProps } from "react";
+import { Spinner } from "./spinner";
 
+/**
+ * Button styles (docs/08 §7). Heights reach 44px on touch layouts (docs/07 §15)
+ * and settle to 40px from `md`. Radius is 8px (D-032); icon-only buttons are
+ * round.
+ */
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  [
+    "relative inline-flex shrink-0 items-center justify-center gap-2 rounded-md border border-transparent font-medium whitespace-nowrap select-none",
+    "transition-[background-color,border-color,color,box-shadow] duration-150",
+    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
+    "disabled:pointer-events-none data-disabled:pointer-events-none",
+    "aria-busy:cursor-progress",
+    "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  ],
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
-        outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+        primary:
+          "bg-primary text-primary-foreground hover:bg-primary-hover active:bg-primary-pressed disabled:bg-surface-subtle disabled:text-foreground-disabled data-disabled:bg-surface-subtle data-disabled:text-foreground-disabled",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "border-border-strong bg-surface text-foreground hover:bg-background active:bg-surface-subtle aria-expanded:bg-surface-subtle disabled:text-foreground-disabled data-disabled:text-foreground-disabled",
         ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+          "text-foreground-secondary hover:bg-surface-subtle hover:text-foreground active:bg-border aria-expanded:bg-surface-subtle disabled:text-foreground-disabled data-disabled:text-foreground-disabled",
         destructive:
-          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-danger text-primary-foreground hover:bg-danger-text active:bg-danger-text disabled:bg-surface-subtle disabled:text-foreground-disabled data-disabled:bg-surface-subtle data-disabled:text-foreground-disabled",
+        "destructive-outline":
+          "border-danger-border bg-surface text-danger-text hover:bg-danger-subtle active:bg-danger-subtle disabled:border-border disabled:text-foreground-disabled data-disabled:border-border data-disabled:text-foreground-disabled",
+        link: "h-auto! px-0! text-primary-text underline-offset-4 hover:underline disabled:text-foreground-disabled",
       },
       size: {
-        default:
-          "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
-        lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        icon: "size-8",
-        "icon-xs":
-          "size-6 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm":
-          "size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg",
-        "icon-lg": "size-9",
+        sm: "h-9 px-3 text-sm md:h-8",
+        md: "h-11 px-4 text-sm md:h-10",
+        lg: "h-12 px-5 text-base",
+        "icon-sm": "size-9 rounded-full md:size-8",
+        icon: "size-11 rounded-full md:size-10",
+        "icon-lg": "size-12 rounded-full",
       },
+      fullWidth: { true: "w-full" },
     },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
+    defaultVariants: { variant: "primary", size: "md" },
   },
 );
 
+type ButtonVariantProps = VariantProps<typeof buttonVariants>;
+
+type ButtonProps = ButtonPrimitive.Props &
+  ButtonVariantProps & {
+    /** Shows a spinner, keeps the label for screen readers and blocks repeat presses. */
+    loading?: boolean;
+  };
+
 function Button({
   className,
-  variant = "default",
-  size = "default",
+  variant,
+  size,
+  fullWidth,
+  loading = false,
+  disabled,
+  children,
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+}: ButtonProps) {
   return (
     <ButtonPrimitive
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size, fullWidth }), className)}
+      disabled={disabled || loading}
+      // Keep focus on the button while it is busy so keyboard users don't lose their place.
+      focusableWhenDisabled={loading}
+      aria-busy={loading || undefined}
+      {...props}
+    >
+      {loading ? (
+        <>
+          <span className="inline-flex items-center gap-2 opacity-0">{children}</span>
+          <span className="absolute inset-0 flex items-center justify-center">
+            <Spinner />
+          </span>
+        </>
+      ) : (
+        children
+      )}
+    </ButtonPrimitive>
+  );
+}
+
+type ButtonLinkProps = ComponentProps<typeof NextLink> & ButtonVariantProps;
+
+/** Navigation styled as a button. Renders a real link (CLAUDE.md §14). */
+function ButtonLink({ className, variant, size, fullWidth, ...props }: ButtonLinkProps) {
+  return (
+    <NextLink
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size, fullWidth }), className)}
       {...props}
     />
   );
 }
 
-export { Button, buttonVariants };
+export { Button, ButtonLink, buttonVariants };
+export type { ButtonProps, ButtonLinkProps };

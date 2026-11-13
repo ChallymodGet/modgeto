@@ -105,6 +105,14 @@
   --info: #2563eb;
   --info-subtle: #eff6ff;
   --info-border: #bfdbfe;
+  /* Text on subtle status backgrounds: darker steps that pass WCAG AA (D-037) */
+  --success-text: #15803d;
+  --warning-text: #b45309;
+  --danger-text: #b91c1c;
+  --info-text: #1d4ed8;
+  --overlay: rgba(15, 23, 42, 0.4);
+  /* Text-field boundary: 3.5:1 on white, 3.35:1 on Background (WCAG 1.4.11, D-037) */
+  --border-control: #7c8aa0;
   --focus: #635bff;
 
   /* Marketing-only decorative values */
@@ -205,6 +213,15 @@
   --color-danger-subtle: var(--danger-subtle);
   --color-info: var(--info);
   --color-info-subtle: var(--info-subtle);
+  --color-info-border: var(--info-border);
+  --color-warning-border: var(--warning-border);
+  --color-danger-border: var(--danger-border);
+  --color-success-text: var(--success-text);
+  --color-warning-text: var(--warning-text);
+  --color-danger-text: var(--danger-text);
+  --color-info-text: var(--info-text);
+  --color-overlay: var(--overlay);
+  --color-border-control: var(--border-control);
   --color-focus: var(--focus);
 
   /* shadcn/ui names */
