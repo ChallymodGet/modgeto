@@ -327,10 +327,14 @@ features/
   requests/
   projects/
   subscriptions/
+  notifications/
+  admin/
+  data/          repositories entry point: screens import data only from here
 
 lib/
   domain/        pure pricing engine, state machines, money utilities (unit-tested)
   fixtures/      typed mock data matching the Phase 03 domain types
+  schemas/       Zod schemas shared by forms and Server Actions
 
 types/
 

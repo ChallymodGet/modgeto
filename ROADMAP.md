@@ -108,20 +108,22 @@ Pure TypeScript with no React and no I/O. Every module ships with Vitest tests.
 
 ## Phase 3: Domain types, Zod schemas, fixtures, and the data-access seam
 
-- [ ] `src/types`: entity types from doc 03 updated with the D-xxx rulings, plus the snapshot types (service, scope, brief, price, terms, commitment).
-- [ ] Zod schemas shared between forms and Server Actions.
-- [ ] Repository interfaces in `features/*`, with a fixture implementation now and a Supabase implementation in Phase 8. Screens never import fixtures directly.
-- [ ] Fixtures (`src/lib/fixtures`):
-  - [ ] A Creative `charles` in each availability state.
-  - [ ] One Service for every pricing mode.
-  - [ ] A Brief with every question type, including visual and conditional questions.
-  - [ ] A Request in every status.
-  - [ ] Proposal history with superseded versions.
-  - [ ] Partial and full payments.
-  - [ ] Active and completed Projects.
-  - [ ] Every subscription state.
-  - [ ] Notifications.
-  - [ ] Admin data.
+- [x] `src/types`: entity types from doc 03 updated with the D-xxx rulings, plus the snapshot types (service, scope, brief, price, terms, commitment).
+- [x] Zod schemas shared between forms and Server Actions.
+- [x] Repository interfaces in `features/*`, with a fixture implementation now and a Supabase implementation in Phase 8. Screens never import fixtures directly.
+- [x] Fixtures (`src/lib/fixtures`):
+  - [x] A Creative in each availability state (Ada AVAILABLE, Tunde LIMITED, Mira UNAVAILABLE; fictional people, `example.com` emails).
+  - [x] One Service for every pricing mode.
+  - [x] A Brief with every question type, including visual and conditional questions.
+  - [x] A Request in every status.
+  - [x] Proposal history with superseded versions.
+  - [x] Partial and full payments.
+  - [x] Active and completed Projects.
+  - [x] Every subscription state.
+  - [x] Notifications.
+  - [x] Admin data.
+
+**Done 12 Nov 2026.** Types in `src/types`, schemas in `src/lib/schemas`, fixtures in `src/lib/fixtures` (Requests built by running the real state machine), repositories behind `src/features/data`. 195 tests.
 
 ---
 

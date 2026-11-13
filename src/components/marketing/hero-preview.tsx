@@ -62,7 +62,7 @@ export function HeroPreview() {
   const sent = step >= 5;
 
   return (
-    <figure ref={ref} className="relative mx-auto w-full max-w-[1040px] text-left">
+    <figure ref={ref} className="relative mx-auto w-full max-w-260 text-left">
       <figcaption className="sr-only">
         Preview: a Client opens a Creative&apos;s Modgeto link, chooses the Brand Identity Service,
         selects a package and an add-on, completes the Project Brief and sends a Project Request.
@@ -85,7 +85,7 @@ export function HeroPreview() {
             <div className="w-10" />
           </div>
 
-          <div className="grid gap-6 p-5 sm:p-8 lg:grid-cols-[1fr_1.2fr] lg:gap-8 lg:pr-[352px]">
+          <div className="grid gap-6 p-5 sm:p-8 lg:grid-cols-[1fr_1.2fr] lg:gap-8 lg:pr-88">
             {/* Creative identity */}
             <div>
               <div className="flex items-center gap-4">
@@ -143,7 +143,7 @@ export function HeroPreview() {
 
         {/* Configuration panel: stacked on mobile, floating on desktop */}
         <div
-          className={`relative mx-auto mt-4 w-full max-w-[380px] rounded-xl border border-border bg-surface-elevated p-5 shadow-[0_24px_60px_-18px_rgba(15,23,42,0.35)] transition-all duration-700 ease-out-soft lg:absolute lg:-right-10 lg:-bottom-14 lg:mt-0 ${
+          className={`relative mx-auto mt-4 w-full max-w-95 rounded-xl border border-border bg-surface-elevated p-5 shadow-[0_24px_60px_-18px_rgba(15,23,42,0.35)] transition-all duration-700 ease-out-soft lg:absolute lg:-right-10 lg:-bottom-14 lg:mt-0 ${
             configuring ? "lg:translate-y-0 lg:opacity-100" : "lg:translate-y-4 lg:opacity-0"
           }`}
         >
