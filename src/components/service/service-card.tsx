@@ -1,6 +1,7 @@
 import { ArrowRight, Clock, ImageIcon } from "lucide-react";
 import NextLink from "next/link";
 import type { ReactNode } from "react";
+import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { standardTurnaround } from "@/features/services/model";
 import { serviceStatusLabel } from "@/lib/domain";
@@ -78,8 +79,15 @@ export function ServiceCard({
             <ImageIcon className="size-8 text-foreground-disabled" />
           </div>
         )}
-        {manage && (
+        {manage ? (
           <ServiceStatusBadge service={service} className="absolute top-3 left-3 shadow-sm" />
+        ) : (
+          service.lifecycle === "UNAVAILABLE" && (
+            // Public view: states the fact, never the private reason (CLAUDE.md §12).
+            <Badge tone="neutral" className="absolute top-3 left-3 bg-surface shadow-sm">
+              Not taking Requests right now
+            </Badge>
+          )
         )}
       </div>
       <div className="flex flex-1 flex-col gap-3 p-5">

@@ -30,7 +30,7 @@ export function PillNav({ label, set, className }: PillNavProps) {
                   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
                   current
                     ? "bg-surface font-semibold text-foreground"
-                    : "text-neutral-300 hover:bg-white/10 hover:text-surface",
+                    : "text-surface/75 hover:bg-surface/10 hover:text-surface",
                 )}
               >
                 {item.label}

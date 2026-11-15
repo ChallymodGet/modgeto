@@ -126,7 +126,8 @@ export function ServicePrice({ service, variant = "card", className }: ServicePr
         : null;
       break;
     case "PACKAGES_FROM":
-      qualifier = "From";
+      // PUB-006: "Packages from $200".
+      qualifier = "Packages from";
       amount = (
         <MoneyDisplay
           amountMinor={summary.amountMinor}
@@ -150,8 +151,9 @@ export function ServicePrice({ service, variant = "card", className }: ServicePr
     case "QUOTE":
       return (
         <div className={cn("flex flex-col gap-1", className)}>
+          {/* PUB-006: Custom Quote reads "Request a quote"; no number is shown (PRC-006). */}
           <span className={cn("text-foreground", hero ? "text-h3" : "text-body font-semibold")}>
-            Custom quote
+            {hero ? "Custom quote" : "Request a quote"}
           </span>
           {hero && (
             <span className="text-body-sm text-foreground-secondary">
