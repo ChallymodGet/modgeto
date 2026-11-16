@@ -19,8 +19,26 @@ type Step = { label: string; href?: string };
 /** Step progress as an ordered list; the current step has `aria-current="step"`. */
 function StepProgress({ steps, current }: { steps: Step[]; current: number }) {
   return (
-    <nav aria-label="Progress">
-      <ol className="flex items-center gap-2 text-label">
+    <nav aria-label="Progress" className="min-w-0 flex-1 sm:flex-none">
+      {/* Phones: a compact label and segmented bar; every step's circle won't fit. */}
+      <div className="flex flex-col gap-1.5 sm:hidden">
+        <p className="truncate text-caption text-foreground-secondary">
+          Step {current + 1} of {steps.length} ·{" "}
+          <span className="font-semibold text-foreground">{steps[current]?.label}</span>
+        </p>
+        <span aria-hidden="true" className="flex gap-1">
+          {steps.map((s, i) => (
+            <span
+              key={s.label}
+              className={cn(
+                "h-1 flex-1 rounded-full",
+                i <= current ? "bg-primary" : "bg-border-strong",
+              )}
+            />
+          ))}
+        </span>
+      </div>
+      <ol className="hidden items-center gap-2 text-label sm:flex">
         {steps.map((step, i) => {
           const state = i < current ? "done" : i === current ? "current" : "upcoming";
           const content = (
@@ -79,8 +97,13 @@ type ConfigurationShellProps = {
   back: { href: string; label: string };
   steps: Step[];
   currentStep: number;
-  /** Price summary. A sticky aside from `lg`; under the content below that. */
+  /** Price summary: a sticky aside from `lg`. */
   summary: ReactNode;
+  /**
+   * Phones and tablets: a fixed bottom bar with the current total and
+   * Continue (docs/06 §27). Without it, the summary stacks under the content.
+   */
+  mobileBar?: ReactNode;
   children: ReactNode;
 };
 
@@ -90,6 +113,7 @@ export function ConfigurationShell({
   steps,
   currentStep,
   summary,
+  mobileBar,
   children,
 }: ConfigurationShellProps) {
   return (
@@ -112,14 +136,32 @@ export function ConfigurationShell({
             <LogoMark className="hidden size-7 sm:block" />
           </div>
         </header>
-        <main id="main" tabIndex={-1} className="outline-none">
+        <main
+          id="main"
+          tabIndex={-1}
+          className={cn(
+            "outline-none",
+            mobileBar && "pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0",
+          )}
+        >
           <div className="mx-auto grid max-w-[1280px] grid-cols-[minmax(0,1fr)] gap-6 px-4 py-6 md:px-6 md:py-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22.5rem)] lg:gap-10 lg:px-8">
             <div className="min-w-0">{children}</div>
-            <aside aria-label="Price summary" className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+            <aside
+              aria-label="Price summary"
+              className={cn(
+                "min-w-0 lg:sticky lg:top-24 lg:self-start",
+                mobileBar && "hidden lg:block",
+              )}
+            >
               {summary}
             </aside>
           </div>
         </main>
+        {mobileBar && (
+          <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur md:px-6 lg:hidden">
+            {mobileBar}
+          </div>
+        )}
         <Toaster />
       </div>
     </TooltipProvider>

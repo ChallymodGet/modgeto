@@ -1,43 +1,52 @@
 import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
-import { ConfigurationShell } from "@/components/layout/flow-shells";
 import { PageSkeleton, ResolveParams } from "@/components/layout/route-helpers";
-import { ScreenPlaceholder } from "@/components/layout/state-screens";
-import { Card } from "@/components/ui/card";
+import { loadPublicCreative } from "@/features/creative-profile/queries";
+import { repositories } from "@/features/data";
+import { ConfigurationFlow } from "@/features/requests/configuration-flow";
+import { isPubliclyVisible, serviceCommitmentBps } from "@/features/services/model";
+import { newRequestBlock } from "@/lib/domain";
 
 export const metadata: Metadata = { title: "Configure your Project", robots: { index: false } };
 
-export default function Page({ params }: PageProps<"/[username]/[serviceSlug]/configure">) {
+async function Configure({ username, slug }: { username: string; slug: string }) {
+  const found = await loadPublicCreative(username);
+  if (!found) notFound();
+  const { creative, user } = found;
+  const base = `/${creative.username}/${slug}`;
+  const service = await repositories.services.getBySlug(creative.userId, slug);
+  if (!service || !isPubliclyVisible(service)) redirect(base);
+  const blocked = newRequestBlock({
+    creativeAccountOperational: user.accountStatus === "ACTIVE",
+    moderation: service.moderation,
+    availability: creative.availability,
+    lifecycle: service.lifecycle,
+    withinSubscriptionCapacity: true,
+  });
+  // No commissioning flow while Requests are paused (PUB-009); the Service page explains.
+  if (blocked) redirect(base);
+
+  return (
+    <ConfigurationFlow
+      service={service}
+      creativeName={creative.displayName}
+      commitmentBps={serviceCommitmentBps(service, creative)}
+      serviceHref={base}
+      configureHref={`${base}/configure`}
+      briefHref={`${base}/brief`}
+      reviewHref={`${base}/review`}
+    />
+  );
+}
+
+export default function ConfigurePage({
+  params,
+}: PageProps<"/[username]/[serviceSlug]/configure">) {
   return (
     <Suspense fallback={<PageSkeleton />}>
       <ResolveParams params={params}>
-        {(p) => {
-          const base = `/${p.username}/${p.serviceSlug}`;
-          return (
-            <ConfigurationShell
-              back={{ href: base, label: "Back to Service" }}
-              steps={[
-                { label: "Configure", href: `${base}/configure` },
-                { label: "Brief", href: `${base}/brief` },
-                { label: "Review", href: `${base}/review` },
-              ]}
-              currentStep={0}
-              summary={
-                <Card>
-                  <p className="text-label text-foreground">Price summary</p>
-                  <p className="text-body-sm text-foreground-muted">Built in Phase 7.3.</p>
-                </Card>
-              }
-            >
-              <h1 className="mb-6 text-h2 text-foreground">Configure your Project</h1>
-              <ScreenPlaceholder
-                title="Configure your Project"
-                phase="Phase 7.3"
-                source="docs/04 §35 and §41"
-              />
-            </ConfigurationShell>
-          );
-        }}
+        {(p) => <Configure username={p.username} slug={p.serviceSlug} />}
       </ResolveParams>
     </Suspense>
   );
