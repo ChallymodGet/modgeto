@@ -5,7 +5,7 @@
  * CFG-007). Adaptive steps; the price updates as selections change; every
  * paid choice shows its effect first; Back keeps answers.
  */
-import { ArrowLeft, ArrowRight, ChevronUp, Info, Plus, RefreshCw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus, RefreshCw } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 import { ConfigurationShell } from "@/components/layout/flow-shells";
@@ -16,25 +16,12 @@ import {
   PackageSelector,
   QuantityControl,
 } from "@/components/service/configuration";
-import { PriceBreakdown, ServicePrice } from "@/components/service/price";
+import { ServicePrice } from "@/components/service/price";
 import { DeliverableList } from "@/components/service/scope";
 import { Button } from "@/components/ui/button";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
 import { toast } from "@/components/ui/toast";
 import { toPricingConfig } from "@/features/services/model";
-import {
-  type DomainError,
-  type Selection,
-  calculatePrice,
-  formatMoney,
-  validateSelection,
-} from "@/lib/domain";
+import { type DomainError, type Selection, validateSelection } from "@/lib/domain";
 import { cn } from "@/lib/utils";
 import type { Service } from "@/types";
 import {
@@ -44,6 +31,7 @@ import {
   stepForIssue,
 } from "./configuration-steps";
 import { saveDraft, useDraft } from "./draft-store";
+import { MobilePriceBar, PriceSummary } from "./price-summary";
 
 type Props = {
   service: Service;
@@ -97,6 +85,7 @@ export function ConfigurationFlow(props: Props) {
     saveDraft(service.id, {
       selection: next,
       answers: draft?.answers ?? {},
+      files: draft?.files,
       validatedAgainstServiceAt: draft?.validatedAgainstServiceAt ?? service.updatedAt,
     });
 
@@ -106,21 +95,6 @@ export function ConfigurationFlow(props: Props) {
   const issueFor = (target: string, codes?: string[]) =>
     visibleIssues.find((i) => i.target === target && (!codes || codes.includes(i.code)))?.message ??
     null;
-  // The summary prices what's chosen so far: choices still to make (required
-  // options, prerequisites) are listed rather than blocking the running total.
-  const provisionalConfig = useMemo(
-    () => ({
-      ...config,
-      optionGroups: config.optionGroups.map((g) => ({ ...g, required: false })),
-      dependencies: [],
-    }),
-    [config],
-  );
-  const price = calculatePrice(provisionalConfig, selection, commitmentBps);
-  const stillToChoose = issues.filter(
-    (i) => i.code === "OPTION_REQUIRED" || i.code === "MISSING_PREREQUISITE",
-  );
-
   // ---------------------------------------------------------------- navigation
   const shellSteps = [
     ...steps.map((s) => ({ label: s.label, href: `${configureHref}?step=${s.id}` })),
@@ -192,44 +166,7 @@ export function ConfigurationFlow(props: Props) {
     if (type === "PACKAGE") update({ ...selection, packageId: id });
   };
 
-  // ---------------------------------------------------------------- summary
-  const totalText = price.ok
-    ? price.value.total
-      ? `${price.value.priceState === "ESTIMATED" ? "Estimated " : ""}${formatMoney(price.value.total)}`
-      : "Quote required"
-    : service.pricingMode === "CUSTOM_QUOTE"
-      ? "Quote required"
-      : "—";
-  const summaryBody = (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-0.5">
-        <p className="text-label text-foreground">{service.name}</p>
-        <p className="text-caption text-foreground-secondary">with {creativeName}</p>
-      </div>
-      {price.ok ? (
-        <>
-          <PriceBreakdown breakdown={price.value} />
-          {stillToChoose.length > 0 && (
-            <div className="flex flex-col gap-1.5 rounded-md bg-surface-subtle px-4 py-3">
-              <p className="text-label text-foreground">Still to choose</p>
-              <ul className="flex list-disc flex-col gap-1 pl-4 text-body-sm text-foreground-secondary">
-                {stillToChoose.map((i) => (
-                  <li key={`${i.code}-${i.target}`}>{i.message}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </>
-      ) : (
-        <p className="flex items-start gap-2 rounded-md bg-surface-subtle px-4 py-3 text-body-sm text-foreground-secondary">
-          <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-info" />
-          {issues.some((i) => i.code === "PACKAGE_REQUIRED")
-            ? "Choose a package to see your price."
-            : "Your price appears once you've made the required choices."}
-        </p>
-      )}
-    </div>
-  );
+  const summaryInput = { service, selection, commitmentBps };
 
   const stepTitle = STEP_TITLES[stepId](service);
 
@@ -238,33 +175,13 @@ export function ConfigurationFlow(props: Props) {
       back={{ href: serviceHref, label: "Back to Service" }}
       steps={shellSteps}
       currentStep={stepIndex}
-      summary={<div className="rounded-xl bg-surface p-6 shadow-sm">{summaryBody}</div>}
-      mobileBar={
-        <div className="flex items-center justify-between gap-3">
-          <Drawer>
-            <DrawerTrigger className="flex min-h-11 min-w-0 flex-col items-start rounded-md px-1 text-left focus-visible:outline-2 focus-visible:outline-focus">
-              <span className="flex items-center gap-1 text-caption text-foreground-secondary">
-                Price summary <ChevronUp aria-hidden="true" className="size-3.5" />
-              </span>
-              <span
-                aria-live="polite"
-                className="truncate text-body font-semibold text-foreground tabular-nums"
-              >
-                {totalText}
-              </span>
-            </DrawerTrigger>
-            <DrawerContent>
-              <DrawerHeader>
-                <DrawerTitle>Price summary</DrawerTitle>
-              </DrawerHeader>
-              <div className="overflow-y-auto px-5 pt-2 pb-6">{summaryBody}</div>
-            </DrawerContent>
-          </Drawer>
-          <Button onClick={onContinue} className="shrink-0">
-            Continue
-            <ArrowRight aria-hidden="true" />
-          </Button>
+      summary={
+        <div className="rounded-xl bg-surface p-6 shadow-sm">
+          <PriceSummary creativeName={creativeName} {...summaryInput} />
         </div>
+      }
+      mobileBar={
+        <MobilePriceBar creativeName={creativeName} {...summaryInput} onContinue={onContinue} />
       }
     >
       <div ref={contentRef} className="flex flex-col gap-8">
@@ -292,6 +209,7 @@ export function ConfigurationFlow(props: Props) {
                 saveDraft(service.id, {
                   selection,
                   answers: draft?.answers ?? {},
+                  files: draft?.files,
                   validatedAgainstServiceAt: service.updatedAt,
                 })
               }

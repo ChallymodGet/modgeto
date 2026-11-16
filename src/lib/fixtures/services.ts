@@ -25,16 +25,25 @@ const STANDARD_TERMS = terms(
 
 /** Every question type, a visual selection and a one-level condition (BRF-002–005). */
 const brandBrief: Brief = {
+  intro:
+    "A few questions so I can start with real context. It takes about 10 minutes, and you can come back to it.",
   sections: [
     {
       id: "bs-business",
       title: "Your business",
       questions: [
-        { id: "q-name", type: "SHORT_TEXT", label: "Business or brand name", required: true },
+        {
+          id: "q-name",
+          type: "SHORT_TEXT",
+          label: "Business or brand name",
+          guidance: "Exactly as it should appear, e.g. Bloom & Co",
+          required: true,
+        },
         {
           id: "q-about",
           type: "LONG_TEXT",
           label: "What does your business do, and for whom?",
+          description: "Two or three sentences is plenty.",
           required: true,
         },
         { id: "q-site", type: "URL", label: "Current website or social page", required: false },
@@ -94,6 +103,7 @@ const brandBrief: Brief = {
           id: "q-directions",
           type: "VISUAL_SELECTION",
           label: "Which logo directions resonate with you?",
+          description: "Choose any that feel right. We'll explore up to three.",
           required: true,
           allowMultiple: true,
           visualExamples: [

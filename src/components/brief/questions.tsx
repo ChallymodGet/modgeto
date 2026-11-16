@@ -186,23 +186,24 @@ export function VisualChoiceQuestion({
   imageFor,
 }: QuestionProps & { imageFor?: (exampleId: string) => string | null }) {
   const examples = question.visualExamples ?? [];
-  const media = (id: string, label: string) => {
+  const media = (id: string) => {
     const src = imageFor?.(id);
     return src ? (
       // eslint-disable-next-line @next/next/no-img-element -- R2 images get next/image in Phase 10
-      <img src={src} alt="" className="aspect-[4/3] w-full object-cover" />
+      <img src={src} alt="" className="aspect-[16/10] w-full object-cover" />
     ) : (
+      // Placeholder until the Creative's examples are uploaded (Phase 10). The label names the card.
       <span
         aria-hidden="true"
-        className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 text-foreground-disabled"
+        className="flex aspect-[16/10] w-full items-center justify-center text-foreground-disabled"
       >
         <ImageIcon className="size-6" />
-        <span className="text-caption">{label}</span>
       </span>
     );
   };
+
   const cards = examples.map((ex) => (
-    <SelectionCard key={ex.id} value={ex.id} title={ex.label} media={media(ex.id, ex.label)} />
+    <SelectionCard key={ex.id} value={ex.id} title={ex.label} media={media(ex.id)} />
   ));
   const shared = {
     legend: question.label,
@@ -241,7 +242,13 @@ export function FileQuestion({
   description,
   upload,
   initialFiles,
-}: QuestionProps & { upload: UploadFn; initialFiles?: UploadedFile[] }) {
+  onFilesChange,
+}: QuestionProps & {
+  upload: UploadFn;
+  initialFiles?: UploadedFile[];
+  /** Receives names and sizes too; when given, it replaces `onChange`. */
+  onFilesChange?: (files: UploadedFile[]) => void;
+}) {
   return (
     <FormFieldset
       legend={question.label}
@@ -255,7 +262,9 @@ export function FileQuestion({
         initialFiles={
           initialFiles ?? asList(value).map((id) => ({ assetId: id, name: id, sizeBytes: 0 }))
         }
-        onChange={(files) => onChange(files.map((f) => f.assetId))}
+        onChange={(files) =>
+          onFilesChange ? onFilesChange(files) : onChange(files.map((f) => f.assetId))
+        }
         invalid={Boolean(error)}
       />
     </FormFieldset>
@@ -279,11 +288,29 @@ export function ConditionalQuestion({ reason, children }: { reason: string; chil
 }
 
 /** Picks the right component for a question's type. */
+/** Picks the right component for a question's type, with its description and guidance (BRF-003). */
 export function QuestionRenderer(
-  props: QuestionProps & { upload: UploadFn; imageFor?: (exampleId: string) => string | null },
+  props: QuestionProps & {
+    upload: UploadFn;
+    imageFor?: (exampleId: string) => string | null;
+    /** Names for already-uploaded files, so they show when the Client returns. */
+    filesFor?: (assetIds: string[]) => UploadedFile[];
+    onFilesChange?: (files: UploadedFile[]) => void;
+  },
 ) {
-  const { upload, imageFor, ...question } = props;
-  switch (props.question.type) {
+  const { upload, imageFor, filesFor, onFilesChange, ...rest } = props;
+  const { question: q } = props;
+  const description =
+    rest.description ??
+    (q.description || q.guidance ? (
+      <>
+        {q.description}
+        {q.description && q.guidance ? " " : null}
+        {q.guidance && <span className="text-foreground-muted">{q.guidance}</span>}
+      </>
+    ) : undefined);
+  const question = { ...rest, description };
+  switch (q.type) {
     case "SINGLE_CHOICE":
     case "MULTIPLE_CHOICE":
     case "DROPDOWN":
@@ -292,7 +319,14 @@ export function QuestionRenderer(
       return <VisualChoiceQuestion {...question} imageFor={imageFor} />;
     case "FILE":
     case "MULTIPLE_FILE":
-      return <FileQuestion {...question} upload={upload} />;
+      return (
+        <FileQuestion
+          {...question}
+          upload={upload}
+          initialFiles={filesFor?.(Array.isArray(rest.value) ? [...rest.value] : [])}
+          onFilesChange={onFilesChange}
+        />
+      );
     default:
       return <TextQuestion {...question} />;
   }

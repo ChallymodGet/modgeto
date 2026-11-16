@@ -30,6 +30,10 @@ export type BriefQuestion = {
   id: string;
   type: QuestionType;
   label: string;
+  /** Supporting description shown under the label (BRF-003). */
+  description?: string;
+  /** Example or guidance, e.g. "Bloom & Co" (BRF-003). */
+  guidance?: string;
   required: boolean;
   /** Choices for SINGLE_CHOICE, MULTIPLE_CHOICE, DROPDOWN. */
   choices?: readonly Choice[];
@@ -40,8 +44,15 @@ export type BriefQuestion = {
   condition?: QuestionCondition;
 };
 
-export type BriefSection = { id: string; title: string; questions: readonly BriefQuestion[] };
-export type Brief = { sections: readonly BriefSection[] };
+export type BriefSection = {
+  id: string;
+  title: string;
+  /** Optional lead-in for the section. */
+  intro?: string;
+  questions: readonly BriefQuestion[];
+};
+/** `intro` is the Creative's Brief introduction shown before the first section (docs/06 §32). */
+export type Brief = { intro?: string; sections: readonly BriefSection[] };
 
 /**
  * Answer values by question type:

@@ -15,6 +15,8 @@ import type { Answers, Selection } from "@/lib/domain";
 export type Draft = {
   selection: Selection;
   answers: Answers;
+  /** Names and sizes of uploaded files by asset id, so they show again on return. */
+  files?: Record<string, { name: string; sizeBytes: number }>;
   /** Service.updatedAt the Client last reviewed, to detect changes (CFG-007). */
   validatedAgainstServiceAt: string;
   updatedAt: string;
