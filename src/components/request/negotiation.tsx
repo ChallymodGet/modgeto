@@ -206,7 +206,7 @@ export function TermsPanel({ terms, acceptedAt, onAccept, mode = "final" }: Term
                 }
               }}
             >
-              Accept terms
+              Accept Terms
             </Button>
           </div>
         )

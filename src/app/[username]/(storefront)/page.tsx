@@ -3,23 +3,11 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PageSkeleton, ResolveParams } from "@/components/layout/route-helpers";
 import { CreativePublicProfile } from "@/features/creative-profile/public-profile";
-import { repositories } from "@/features/data";
-
-/** Profiles of suspended or unknown accounts are simply not found (no private reasons). */
-async function loadProfile(username: string) {
-  const creative = await repositories.creatives.getByUsername(username);
-  if (!creative) return null;
-  const user = await repositories.users.getById(creative.userId);
-  if (!user || user.accountStatus === "SUSPENDED" || user.accountStatus === "DELETION_PENDING") {
-    return null;
-  }
-  const services = await repositories.services.listPublicByCreative(creative.userId);
-  return { creative, services };
-}
+import { loadPublicProfile } from "@/features/creative-profile/queries";
 
 export async function generateMetadata({ params }: PageProps<"/[username]">): Promise<Metadata> {
   const { username } = await params;
-  const data = await loadProfile(username);
+  const data = await loadPublicProfile(username);
   if (!data) return { title: "Page not found" };
   const { creative } = data;
   return {
@@ -34,7 +22,7 @@ export async function generateMetadata({ params }: PageProps<"/[username]">): Pr
 }
 
 async function Profile({ username }: { username: string }) {
-  const data = await loadProfile(username);
+  const data = await loadPublicProfile(username);
   if (!data) notFound();
   return <CreativePublicProfile creative={data.creative} services={data.services} />;
 }

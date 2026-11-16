@@ -8,6 +8,8 @@ import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 
 type StateProps = {
+  /** h1 when the state replaces the whole page. */
+  headingLevel?: "h1" | "h2";
   title?: string;
   description?: ReactNode;
   action?: { href: string; label: string };
@@ -20,6 +22,7 @@ function Centered({ children }: { children: ReactNode }) {
 }
 
 export function NotFoundScreen({
+  headingLevel = "h2",
   title = "We can't find that page",
   description = "The link may be wrong, or the page may have moved.",
   action = { href: "/", label: "Go to Modgeto" },
@@ -27,7 +30,7 @@ export function NotFoundScreen({
   return (
     <Centered>
       <EmptyState
-        headingLevel="h2"
+        headingLevel={headingLevel}
         icon={<FileQuestion />}
         title={title}
         description={description}
@@ -38,6 +41,7 @@ export function NotFoundScreen({
 }
 
 export function PermissionDeniedScreen({
+  headingLevel = "h2",
   title = "You don't have access to this",
   description = "This page belongs to another account. Check that you're signed in with the right email address.",
   action,
@@ -45,6 +49,7 @@ export function PermissionDeniedScreen({
   return (
     <Centered>
       <EmptyState
+        headingLevel={headingLevel}
         icon={<Lock />}
         title={title}
         description={description}
@@ -56,6 +61,7 @@ export function PermissionDeniedScreen({
 
 /** A Service or profile that exists but can't take Requests right now. */
 export function ResourceUnavailableScreen({
+  headingLevel = "h2",
   title = "This isn't available right now",
   description = "It may be paused or no longer offered. Existing Requests are not affected.",
   action,
@@ -63,6 +69,7 @@ export function ResourceUnavailableScreen({
   return (
     <Centered>
       <EmptyState
+        headingLevel={headingLevel}
         icon={<PauseCircle />}
         title={title}
         description={description}

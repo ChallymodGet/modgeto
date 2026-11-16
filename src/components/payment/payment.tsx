@@ -237,7 +237,7 @@ export function PaymentDeclarationForm({
       />
       <ExternalPaymentNote />
       <Button type="submit" loading={busy} className="self-start">
-        Declare payment
+        I&apos;ve Made the Payment
       </Button>
     </form>
   );
@@ -334,7 +334,7 @@ export function PaymentConfirmationForm({
           <div className="flex flex-col gap-2 sm:flex-row">
             <Button type="submit" loading={busy}>
               <CircleCheck aria-hidden="true" />
-              Confirm payment
+              Confirm Amount Received
             </Button>
             <Button type="button" variant="secondary" onClick={() => setMode("not-received")}>
               Not received yet

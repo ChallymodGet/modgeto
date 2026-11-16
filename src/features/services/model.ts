@@ -106,3 +106,14 @@ export function servicePriceSummary(
       return { kind: "QUOTE" };
   }
 }
+
+/**
+ * Public pages show Published and Unavailable Services that aren't moderated
+ * (SRV-010, PUB-009). Anything else gets the unavailable state, with no reason.
+ */
+export function isPubliclyVisible(service: Pick<Service, "lifecycle" | "moderation">): boolean {
+  return (
+    (service.lifecycle === "PUBLISHED" || service.lifecycle === "UNAVAILABLE") &&
+    service.moderation === "NORMAL"
+  );
+}

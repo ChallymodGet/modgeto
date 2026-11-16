@@ -190,7 +190,7 @@ The order follows CLAUDE.md §20. Rows marked ➕ are screens from the doc 06 in
 | # | Screen(s) | Notes |
 |---|---|---|
 | 7.1 ✅ | Creative Public Profile | Available, Limited, and Unavailable states. No Selected Work section when there are no samples. **Done 15 Nov 2026.** Known issue: an unknown username shows Not Found but returns HTTP 200, because the page streams. Revisit with Supabase data in Phase 8. |
-| 7.2 | Service Detail and Service Unavailable | Pricing language for each mode. No private reasons shown. |
+| 7.2 ✅ | Service Detail and Service Unavailable | Pricing language for each mode. No private reasons shown. **Done 16 Nov 2026.** A sticky summary on desktop and a sticky Configure bar on phones. Paused Services stay readable but can't be configured. Hidden or unknown Services show an unavailable page that links to the Creative's other Services. |
 | 7.3 | Client Configuration | Adaptive steps, sticky or collapsible summary, back navigation keeps answers. |
 | 7.4 | Client Brief | Section by section, validation focus, upload states. |
 | 7.5 | ➕ Auth screens and Client Identification | Sign up, sign in, verify email, verify phone (OTP UI), forgot and reset password, expired link. Needed for the Review step's identity handoff. |

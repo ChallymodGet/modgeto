@@ -23,3 +23,17 @@ describe("servicePriceSummary (docs/06 §23)", () => {
     });
   });
 });
+
+describe("isPubliclyVisible (SRV-010, PUB-009)", () => {
+  it("shows Published and Unavailable Services, hides everything else", async () => {
+    const { isPubliclyVisible } = await import("./model");
+    expect(isPubliclyVisible({ lifecycle: "PUBLISHED", moderation: "NORMAL" })).toBe(true);
+    expect(isPubliclyVisible({ lifecycle: "UNAVAILABLE", moderation: "NORMAL" })).toBe(true);
+    for (const lifecycle of ["DRAFT", "SUBSCRIPTION_INACTIVE", "ARCHIVED"] as const) {
+      expect(isPubliclyVisible({ lifecycle, moderation: "NORMAL" })).toBe(false);
+    }
+    expect(isPubliclyVisible({ lifecycle: "PUBLISHED", moderation: "PLATFORM_DISABLED" })).toBe(
+      false,
+    );
+  });
+});
