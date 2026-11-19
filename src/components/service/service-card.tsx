@@ -29,8 +29,8 @@ export function ServiceStatusBadge({
 type ServiceCardProps = {
   service: Service;
   href: string;
-  /** Creative workspace view: shows the lifecycle status and an actions slot. */
-  manage?: { actions?: ReactNode };
+  /** Creative workspace view: lifecycle status, a meta line (e.g. last updated) and actions. */
+  manage?: { actions?: ReactNode; meta?: ReactNode };
   headingLevel?: "h2" | "h3";
   className?: string;
 };
@@ -60,7 +60,13 @@ export function ServiceCard({
         className,
       )}
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-surface-subtle">
+      <div
+        className={cn(
+          "relative overflow-hidden bg-surface-subtle",
+          // Workspace cards keep the cover short on phones so the list stays scannable.
+          manage ? "aspect-[16/7] md:aspect-[16/10]" : "aspect-[16/10]",
+        )}
+      >
         {service.coverImageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element -- R2 images get next/image in Phase 10
           <img
@@ -113,6 +119,7 @@ export function ServiceCard({
             </span>
           )}
         </div>
+        {manage?.meta && <p className="text-caption text-foreground-secondary">{manage.meta}</p>}
         {manage?.actions ? (
           // Actions sit above the stretched link so they stay clickable.
           <div className="relative z-10 flex flex-wrap gap-2 border-t border-border pt-3">
