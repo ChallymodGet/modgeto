@@ -74,7 +74,66 @@ export async function signIn(input: { email: string; password: string }): Promis
       message: "That email and password don't match. Try again or reset your password.",
     };
   }
+  // Existing accounts in the simulation are already verified.
+  store({
+    fullName: input.email.split("@")[0],
+    email: input.email,
+    phone: "",
+    emailVerified: true,
+    phoneVerified: true,
+  });
+  notify();
   return { ok: true };
+}
+
+export type Identity = {
+  email: string;
+  fullName: string;
+  emailVerified: boolean;
+  phoneVerified: boolean;
+};
+
+/** Who is signed in, if anyone. Stable between calls so it works with useSyncExternalStore. */
+let identityCache: { raw: string | null; value: Identity | null } = { raw: null, value: null };
+export function currentIdentity(): Identity | null {
+  let raw: string | null = null;
+  try {
+    raw = window.sessionStorage.getItem(KEY);
+  } catch {
+    raw = null;
+  }
+  if (raw === identityCache.raw) return identityCache.value;
+  const p = raw ? (JSON.parse(raw) as Pending) : null;
+  identityCache = {
+    raw,
+    value: p
+      ? {
+          email: p.email,
+          fullName: p.fullName,
+          emailVerified: p.emailVerified,
+          phoneVerified: p.phoneVerified,
+        }
+      : null,
+  };
+  return identityCache.value;
+}
+
+const listeners = new Set<() => void>();
+function notify() {
+  listeners.forEach((l) => l());
+}
+export function subscribeIdentity(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+export function signOut() {
+  try {
+    window.sessionStorage.removeItem(KEY);
+  } catch {
+    // ignore
+  }
+  notify();
 }
 
 export async function resendVerificationEmail(): Promise<AuthResult> {
@@ -117,6 +176,7 @@ export async function verifyPhoneCode(code: string): Promise<OtpResult> {
   if (p.otp.attemptsLeft <= 0) return { ok: false, reason: "TOO_MANY_ATTEMPTS" };
   if (code === "123456") {
     store({ ...p, phoneVerified: true, otp: undefined });
+    notify();
     return { ok: true };
   }
   const attemptsLeft = p.otp.attemptsLeft - 1;

@@ -9,15 +9,12 @@ import {
   type Discount,
   type RequestAction,
   type Selection,
-  calculatePrice,
   calculateProposalTotals,
   submittedRequest,
   transitionRequest,
   unwrap,
-  validateBriefAnswers,
-  visibleQuestions,
 } from "@/lib/domain";
-import { serviceCommitmentBps, toPricingConfig } from "@/features/services/model";
+import { buildRequestSnapshot } from "@/features/requests/snapshot";
 import type {
   CommercialAgreement,
   CommercialProposal,
@@ -26,7 +23,6 @@ import type {
   Project,
   RequestDetail,
   RequestSnapshot,
-  ScopeSnapshot,
   Service,
   TermsSnapshot,
   Turnaround,
@@ -75,64 +71,14 @@ export type RequestSeed = {
 
 export type BuiltRequest = { detail: RequestDetail; project: Project | null };
 
-function buildScope(service: Service, selection: Selection): ScopeSnapshot {
-  const pkg = service.packages.find((p) => p.id === selection.packageId) ?? null;
-  const delivery =
-    service.deliveryOptions.find((d) => d.id === selection.deliveryOptionId) ??
-    service.deliveryOptions.find((d) => d.isStandard)!;
-  return {
-    selection,
-    packageName: pkg?.name ?? null,
-    deliverables: service.deliverables
-      .filter((d) => d.packageId === null || d.packageId === pkg?.id)
-      .map((d) => ({ name: d.name, description: d.description })),
-    turnaround: delivery.isStandard && pkg ? pkg.turnaround : delivery.turnaround,
-    revisions: pkg?.revisions ?? service.revisions.policy,
-  };
-}
-
+/** Fixtures use the product's own snapshot builder, and must be complete. */
 export function buildSnapshot(
   service: Service,
   creative: CreativeProfile,
   selection: Selection,
   answers: Answers,
 ): RequestSnapshot {
-  const issues = validateBriefAnswers(service.brief, answers);
-  if (issues.length > 0) {
-    throw new Error(
-      `Fixture Brief for ${service.slug} is incomplete: ${issues.map((i) => i.target).join(", ")}`,
-    );
-  }
-  const bps = serviceCommitmentBps(service, creative);
-  const price = unwrap(calculatePrice(toPricingConfig(service), selection, bps));
-  return {
-    service: {
-      serviceId: service.id,
-      name: service.name,
-      slug: service.slug,
-      shortDescription: service.shortDescription,
-      pricingMode: service.pricingMode,
-      currency: service.currency,
-      creative: {
-        userId: creative.userId,
-        username: creative.username,
-        displayName: creative.displayName,
-        professionalTitle: creative.professionalTitle,
-      },
-    },
-    scope: buildScope(service, selection),
-    brief: {
-      brief: service.brief,
-      answers,
-      visibleQuestionIds: visibleQuestions(service.brief, answers).map((q) => q.id),
-    },
-    price,
-    terms: { content: service.terms.content, version: service.terms.version },
-    commitment: {
-      bps: price.commitment ? bps : null,
-      amountMinor: price.commitment?.amountMinor ?? null,
-    },
-  };
+  return unwrap(buildRequestSnapshot(service, creative, selection, answers));
 }
 
 export function buildRequest(seed: RequestSeed): BuiltRequest {

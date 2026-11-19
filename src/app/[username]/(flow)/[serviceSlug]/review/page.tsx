@@ -1,43 +1,59 @@
 import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
-import { ConfigurationShell } from "@/components/layout/flow-shells";
 import { PageSkeleton, ResolveParams } from "@/components/layout/route-helpers";
-import { ScreenPlaceholder } from "@/components/layout/state-screens";
-import { Card } from "@/components/ui/card";
+import { loadPublicCreative } from "@/features/creative-profile/queries";
+import { repositories } from "@/features/data";
+import { ReviewFlow } from "@/features/requests/review-flow";
+import { isPubliclyVisible, serviceCommitmentBps } from "@/features/services/model";
+import { newRequestBlock } from "@/lib/domain";
 
-export const metadata: Metadata = { title: "Review and submit", robots: { index: false } };
+export const metadata: Metadata = {
+  title: "Review your Project Request",
+  robots: { index: false },
+};
 
-export default function Page({ params }: PageProps<"/[username]/[serviceSlug]/review">) {
+async function Review({ username, slug }: { username: string; slug: string }) {
+  const found = await loadPublicCreative(username);
+  if (!found) notFound();
+  const { creative, user } = found;
+  const base = `/${creative.username}/${slug}`;
+  const service = await repositories.services.getBySlug(creative.userId, slug);
+  if (!service || !isPubliclyVisible(service)) redirect(base);
+  // Revalidate the Service before submission (docs/05 §19).
+  const blocked = newRequestBlock({
+    creativeAccountOperational: user.accountStatus === "ACTIVE",
+    moderation: service.moderation,
+    availability: creative.availability,
+    lifecycle: service.lifecycle,
+    withinSubscriptionCapacity: true,
+  });
+  if (blocked) redirect(base);
+
+  return (
+    <ReviewFlow
+      service={service}
+      creative={{
+        displayName: creative.displayName,
+        username: creative.username,
+        avatarUrl: creative.avatarUrl,
+        professionalTitle: creative.professionalTitle,
+      }}
+      commitmentBps={serviceCommitmentBps(service, creative)}
+      serviceHref={base}
+      configureHref={`${base}/configure`}
+      briefHref={`${base}/brief`}
+      reviewHref={`${base}/review`}
+      submittedHref={`${base}/submitted`}
+    />
+  );
+}
+
+export default function ReviewPage({ params }: PageProps<"/[username]/[serviceSlug]/review">) {
   return (
     <Suspense fallback={<PageSkeleton />}>
       <ResolveParams params={params}>
-        {(p) => {
-          const base = `/${p.username}/${p.serviceSlug}`;
-          return (
-            <ConfigurationShell
-              back={{ href: base, label: "Back to Service" }}
-              steps={[
-                { label: "Configure", href: `${base}/configure` },
-                { label: "Brief", href: `${base}/brief` },
-                { label: "Review", href: `${base}/review` },
-              ]}
-              currentStep={2}
-              summary={
-                <Card>
-                  <p className="text-label text-foreground">Price summary</p>
-                  <p className="text-body-sm text-foreground-muted">Built in Phase 7.3.</p>
-                </Card>
-              }
-            >
-              <h1 className="mb-6 text-h2 text-foreground">Review and submit</h1>
-              <ScreenPlaceholder
-                title="Review and submit"
-                phase="Phase 7.6"
-                source="docs/06 Request Review"
-              />
-            </ConfigurationShell>
-          );
-        }}
+        {(p) => <Review username={p.username} slug={p.serviceSlug} />}
       </ResolveParams>
     </Suspense>
   );

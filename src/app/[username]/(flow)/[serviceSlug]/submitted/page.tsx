@@ -1,21 +1,42 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { PublicLayout } from "@/components/layout/focused-shells";
-import { PageContainer } from "@/components/layout/page";
-import { ScreenPlaceholder } from "@/components/layout/state-screens";
+import { PageSkeleton, ResolveParams } from "@/components/layout/route-helpers";
+import { loadPublicCreative } from "@/features/creative-profile/queries";
+import { repositories } from "@/features/data";
+import { serviceCommitmentBps } from "@/features/services/model";
+import { RequestSubmitted } from "@/features/requests/submitted";
 
-export const metadata: Metadata = { title: "Request submitted", robots: { index: false } };
+export const metadata: Metadata = { title: "Project Request submitted", robots: { index: false } };
 
-export default function Page() {
+async function Submitted({ username, slug }: { username: string; slug: string }) {
+  const found = await loadPublicCreative(username);
+  if (!found) notFound();
+  const { creative } = found;
+  const service = await repositories.services.getBySlug(creative.userId, slug);
+  if (!service) notFound();
+  return (
+    <RequestSubmitted
+      creativeName={creative.displayName}
+      creativeUsername={creative.username}
+      serviceName={service.name}
+      pricingMode={service.pricingMode}
+      hasCommitment={serviceCommitmentBps(service, creative) !== null}
+    />
+  );
+}
+
+export default function SubmittedPage({
+  params,
+}: PageProps<"/[username]/[serviceSlug]/submitted">) {
   return (
     <PublicLayout>
-      <PageContainer size="narrow">
-        <h1 className="mb-6 text-h1 text-foreground">Request submitted</h1>
-        <ScreenPlaceholder
-          title="Request Submitted"
-          phase="Phase 7.6"
-          source="docs/06 Request Submitted"
-        />
-      </PageContainer>
+      <Suspense fallback={<PageSkeleton />}>
+        <ResolveParams params={params}>
+          {(p) => <Submitted username={p.username} slug={p.serviceSlug} />}
+        </ResolveParams>
+      </Suspense>
     </PublicLayout>
   );
 }

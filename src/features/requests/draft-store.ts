@@ -17,6 +17,8 @@ export type Draft = {
   answers: Answers;
   /** Names and sizes of uploaded files by asset id, so they show again on return. */
   files?: Record<string, { name: string; sizeBytes: number }>;
+  /** One key per draft, so repeated submits create one Request (CFG-006). */
+  idempotencyKey?: string;
   /** Service.updatedAt the Client last reviewed, to detect changes (CFG-007). */
   validatedAgainstServiceAt: string;
   updatedAt: string;

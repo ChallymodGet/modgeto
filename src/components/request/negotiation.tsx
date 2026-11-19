@@ -137,13 +137,29 @@ type TermsPanelProps = {
   onAccept?: () => Promise<void> | void;
   /** `final` is the explicit acceptance before Ready to Start (D-002). */
   mode?: "acknowledge" | "final";
+  /**
+   * Submission acknowledgement (D-002): a controlled checkbox with no button,
+   * because the Submit action records it. Replaces `onAccept`.
+   */
+  acknowledgement?: {
+    checked: boolean;
+    onCheckedChange: (checked: boolean) => void;
+    error?: string | null;
+  };
 };
 
 /**
  * The Service terms snapshot. Long terms scroll inside a focusable region;
  * acceptance needs a real checkbox and an explicit button press.
  */
-export function TermsPanel({ terms, acceptedAt, onAccept, mode = "final" }: TermsPanelProps) {
+export function TermsPanel({
+  terms,
+  acceptedAt,
+  onAccept,
+  mode = "final",
+  acknowledgement,
+  showHeading = true,
+}: TermsPanelProps & { showHeading?: boolean }) {
   const regionId = useId();
   const [checked, setChecked] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -152,7 +168,10 @@ export function TermsPanel({ terms, acceptedAt, onAccept, mode = "final" }: Term
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-baseline justify-between gap-3">
-        <h3 id={`${regionId}-title`} className="text-h4 text-foreground">
+        <h3
+          id={`${regionId}-title`}
+          className={showHeading ? "text-h4 text-foreground" : "sr-only"}
+        >
           Terms
         </h3>
         <span className="text-caption text-foreground-muted">Version {terms.version}</span>
@@ -165,7 +184,19 @@ export function TermsPanel({ terms, acceptedAt, onAccept, mode = "final" }: Term
       >
         {terms.content}
       </div>
-      {acceptedAt ? (
+      {acknowledgement ? (
+        <FormField
+          orientation="horizontal"
+          label="I've read these terms and agree to them for this Project Request"
+          description="If the Creative changes the scope, price or terms later, you'll review and accept them again."
+          error={acknowledgement.error}
+        >
+          <Checkbox
+            checked={acknowledgement.checked}
+            onCheckedChange={acknowledgement.onCheckedChange}
+          />
+        </FormField>
+      ) : acceptedAt ? (
         <p className="flex items-center gap-2 text-body-sm text-success-text">
           <CircleCheck aria-hidden="true" className="size-4" />
           You accepted version {terms.version} on {formatDate(acceptedAt)}.
