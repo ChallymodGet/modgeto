@@ -401,6 +401,20 @@ Storefront configuration lives under the Service link: `/[username]/[serviceSlug
 
 Until the product launches, `/app`, `/admin`, `/auth`, the `/[username]` storefronts and `/dev` return Not Found in production builds unless `ENABLE_DEV_ROUTES=true`. Development servers always serve them. The prelaunch landing page (D-033) stays public. Removing this gate is a launch task (Phase 15).
 
+### D-041 Phone and email verification limits (implementation ruling, 16 November 2026; awaiting confirmation)
+
+AUTH-004 requires OTP expiry, attempt limits, a resend cooldown and rate limiting, but sets no values. V1 uses:
+
+| Setting | Value |
+|---|---|
+| Code length | 6 digits |
+| Code expiry | 10 minutes |
+| Wrong attempts per code | 5, then a new code is needed |
+| Resend cooldown | 60 seconds |
+| Email verification and password-reset links | Single use, expire after 24 hours |
+
+Rate limits per phone number and per IP are set in Phase 9 alongside the Termii integration. Password reset replies the same way whether or not the email has an account, so it can't be used to discover accounts.
+
 ---
 
 ## 6. Tracked Risks

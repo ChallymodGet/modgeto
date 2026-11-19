@@ -35,6 +35,16 @@ export const otpSchema = z.object({
     .regex(/^\d{6}$/, { error: "Enter the 6-digit code." }),
 });
 
+/** AUTH-007: the same reply whether or not the email has an account (no enumeration). */
+export const forgotPasswordSchema = z.object({ email: emailSchema });
+
+export const resetPasswordSchema = z
+  .object({ password: passwordSchema, confirm: z.string() })
+  .refine((v) => v.password === v.confirm, {
+    path: ["confirm"],
+    message: "The passwords don't match.",
+  });
+
 // ---------------------------------------------------------------- Creative profile (PROF-002)
 
 export const creativeProfileSchema = z.object({
