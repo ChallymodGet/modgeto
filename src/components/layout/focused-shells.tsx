@@ -55,7 +55,13 @@ export function PublicLayout({ children }: { children: ReactNode }) {
 }
 
 /** Centred, single-task layout for sign up, sign in and verification. */
-export function AuthLayout({ children }: { children: ReactNode }) {
+export function AuthLayout({
+  children,
+  width = "md",
+}: {
+  children: ReactNode;
+  width?: "md" | "lg";
+}) {
   return (
     <TooltipProvider>
       <div className="flex min-h-dvh flex-col bg-background">
@@ -74,7 +80,9 @@ export function AuthLayout({ children }: { children: ReactNode }) {
           tabIndex={-1}
           className="flex flex-1 items-start justify-center px-4 pt-6 pb-[calc(2.5rem+env(safe-area-inset-bottom))] outline-none md:items-center md:pt-0"
         >
-          <div className="w-full max-w-md rounded-xl bg-surface p-6 shadow-sm md:p-8">
+          <div
+            className={`w-full rounded-xl bg-surface p-6 shadow-sm md:p-8 ${width === "lg" ? "max-w-2xl" : "max-w-md"}`}
+          >
             {children}
           </div>
         </main>

@@ -61,6 +61,37 @@ export const creativeLinkSchema = z.object({
   label: optionalText(40),
 });
 
+/** PROF-004: availability, default currency and default commitment. */
+export const businessPreferencesSchema = z
+  .object({
+    availability: z.enum(["AVAILABLE", "LIMITED", "UNAVAILABLE"]),
+    availabilityNote: optionalText(120),
+    defaultCurrency: z.enum(["NGN", "USD", "GBP", "EUR"]),
+    commitment: z.enum(["NONE", "PERCENT"]),
+    commitmentPercent: z.string().optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.commitment !== "PERCENT") return;
+    const parsed = percentInput({ min: 1 }).safeParse(value.commitmentPercent ?? "");
+    if (!parsed.success) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["commitmentPercent"],
+        message: parsed.error.issues[0].message,
+      });
+    }
+  });
+
+/**
+ * PAY-002 external payment method. Field structure per type is roadmap Q7;
+ * until then each method is a label plus free-text instructions.
+ */
+export const paymentMethodSchema = z.object({
+  type: z.enum(["BANK_TRANSFER", "PAYPAL", "MOBILE_MONEY", "CUSTOM"]),
+  label: requiredText("a name for this method", 40),
+  instructions: requiredText("the payment details", 500),
+});
+
 // ---------------------------------------------------------------- Negotiation (D-008, QTE-001)
 
 const turnaroundSchema = z.object({
