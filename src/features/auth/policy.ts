@@ -1,6 +1,6 @@
 /**
  * Authentication limits and safe return paths (AUTH-004, docs/05 §36).
- * OTP values are D-041 (implementation ruling, awaiting confirmation).
+ * OTP values are D-041 (approved 19 November 2026).
  */
 
 export const OTP_LENGTH = 6;
