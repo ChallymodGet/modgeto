@@ -115,20 +115,20 @@ export function HeroPreview() {
                 return (
                   <li
                     key={s.name}
-                    className={`flex items-center justify-between gap-4 rounded-lg border px-4 py-3 transition-all duration-500 ${
+                    className={`flex flex-col items-start gap-1 rounded-lg border px-4 py-3 transition-all duration-500 sm:flex-row sm:items-center sm:justify-between sm:gap-4 ${
                       active
                         ? "border-primary bg-primary-subtle shadow-[0_0_0_3px_var(--primary-subtle)]"
                         : "border-border bg-surface"
                     }`}
                   >
-                    <div className="min-w-0">
+                    <div className="max-w-full min-w-0">
                       <p className="truncate text-label text-foreground">{s.name}</p>
                       <p className="text-caption text-foreground-muted">
                         {s.note} · {s.meta}
                       </p>
                     </div>
                     <p
-                      className={`shrink-0 text-body-sm ${
+                      className={`text-body-sm sm:shrink-0 ${
                         i === 2 ? "text-foreground-muted" : "font-medium text-foreground"
                       }`}
                     >
@@ -202,14 +202,14 @@ export function HeroPreview() {
             </div>
           </div>
 
-          <div className="mt-5 flex items-end justify-between border-t border-border pt-4">
+          <div className="mt-5 flex flex-col gap-3 border-t border-border pt-4 min-[400px]:flex-row min-[400px]:items-end min-[400px]:justify-between">
             <div>
               <p className="text-caption text-foreground-muted">Project total</p>
               <p className="text-[1.75rem] leading-none text-numeral text-foreground">
                 {addOn ? "₦530,000" : "₦450,000"}
               </p>
             </div>
-            <div className="flex items-center gap-1.5 text-caption text-foreground-muted">
+            <div className="flex items-center gap-1.5 text-caption whitespace-nowrap text-foreground-muted">
               <Clock className="size-3.5" /> 3 weeks
               <RotateCcw className="ml-2 size-3.5" /> 2 revisions
             </div>

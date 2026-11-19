@@ -107,7 +107,7 @@ export default function Home() {
         {/* For Creatives */}
         <section
           id="creatives"
-          className="scroll-mt-8 border-t border-border bg-surface/40 py-20 sm:py-28"
+          className="scroll-mt-8 border-t border-border bg-surface/40 py-16 sm:py-28"
         >
           <div className="mx-auto max-w-[1200px] px-5 sm:px-8">
             <div className="mg-reveal max-w-[40rem]">
@@ -151,7 +151,7 @@ export default function Home() {
         </section>
 
         {/* Built for */}
-        <section className="py-20 sm:py-24" aria-labelledby="built-for">
+        <section className="py-16 sm:py-24" aria-labelledby="built-for">
           <div className="mx-auto max-w-[1200px] px-5 text-center sm:px-8">
             <h2
               id="built-for"
@@ -230,7 +230,8 @@ function Feature({
         <h3 className="mt-5 text-h3">{title}</h3>
         <p className="mt-2 max-w-[44ch] text-body-sm text-foreground-secondary">{body}</p>
       </div>
-      <div aria-hidden className="mt-auto px-6 pb-6 sm:px-8 sm:pb-8">
+      {/* Visuals size to the card (container queries), not the screen. */}
+      <div aria-hidden className="@container mt-auto px-6 pb-6 sm:px-8 sm:pb-8">
         {visual}
       </div>
     </SpotlightCard>
@@ -244,19 +245,19 @@ function ServicesVisual() {
     { name: "Complete", price: "₦700,000", selected: false },
   ];
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-1 gap-2 @md:grid-cols-3">
       {packages.map((p) => (
         <div
           key={p.name}
-          className={`rounded-lg border p-3 transition-transform duration-500 group-hover:-translate-y-1 ${
+          className={`flex items-center justify-between gap-3 rounded-lg border p-3 transition-transform duration-500 group-hover:-translate-y-1 @md:block ${
             p.selected ? "border-primary bg-primary-subtle" : "border-border bg-background"
           }`}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 @md:justify-between">
             <p className="text-caption text-foreground-muted">{p.name}</p>
             {p.selected && <Check className="size-3.5 text-primary-text" />}
           </div>
-          <p className="mt-2 text-[1.05rem] text-numeral text-foreground sm:text-[1.25rem]">
+          <p className="text-[1.05rem] text-numeral text-foreground @md:mt-2 @lg:text-[1.25rem]">
             {p.price}
           </p>
         </div>
@@ -276,7 +277,7 @@ function BriefVisual() {
       {questions.map((q, i) => (
         <li
           key={q}
-          className="flex items-center gap-3 rounded-lg border border-border bg-background px-3 py-2.5"
+          className="flex min-w-0 items-center gap-3 rounded-lg border border-border bg-background px-3 py-2.5"
         >
           <span
             className={`flex size-5 shrink-0 items-center justify-center rounded-full ${
@@ -285,7 +286,7 @@ function BriefVisual() {
           >
             {i < 2 && <Check className="size-3" strokeWidth={3} />}
           </span>
-          <span className="truncate text-body-sm text-foreground-secondary">{q}</span>
+          <span className="min-w-0 truncate text-body-sm text-foreground-secondary">{q}</span>
         </li>
       ))}
     </ul>
@@ -316,7 +317,7 @@ function PricingVisual() {
 
 function LinkVisual() {
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-3 @md:flex-row @md:items-center">
       <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full border border-border bg-background px-4 py-3">
         <Link2 className="size-4 shrink-0 text-primary-text" />
         <span className="truncate text-body-sm text-foreground-muted">

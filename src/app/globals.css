@@ -314,6 +314,13 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    /*
+     * Light only (CLAUDE.md §9). "only" stops Chrome's Auto dark mode and
+     * Samsung Internet from force-darkening the light theme; without it the
+     * marketing theme toggle appeared to do nothing on those phones. The
+     * marketing dark theme sets color-scheme: dark.
+     */
+    color-scheme: only light;
   }
   body {
     background: var(--background);
