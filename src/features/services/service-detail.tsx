@@ -30,6 +30,8 @@ type Props = {
   /** Null when the Service can't take new Requests right now (no reason shown publicly). */
   configureHref: string | null;
   commitmentBps: number | null;
+  /** Builder preview (SRV-006): shows where the Client starts, without a live link. */
+  preview?: boolean;
 };
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
@@ -64,7 +66,13 @@ function PausedNotice({ firstName }: { firstName: string }) {
   );
 }
 
-export function ServiceDetail({ creative, service, configureHref, commitmentBps }: Props) {
+export function ServiceDetail({
+  creative,
+  service,
+  configureHref,
+  commitmentBps,
+  preview = false,
+}: Props) {
   const firstName = creative.displayName.split(" ")[0];
   const profileHref = `/${creative.username}`;
   const turnaround = standardTurnaround(service) ?? service.packages[0]?.turnaround ?? null;
@@ -77,7 +85,11 @@ export function ServiceDetail({ creative, service, configureHref, commitmentBps 
   const summary = servicePriceSummary(service);
   const termsParagraphs = service.terms.content.split(/\n\s*\n/).filter(Boolean);
 
-  const cta = configureHref ? (
+  const cta = preview ? (
+    <p className="rounded-md border border-dashed border-border-strong p-4 text-center text-body-sm text-foreground-secondary">
+      Clients see the {ctaLabel(service)} button here.
+    </p>
+  ) : configureHref ? (
     <ButtonLink href={configureHref} size="lg" fullWidth>
       {ctaLabel(service)}
       <ArrowRight aria-hidden="true" />

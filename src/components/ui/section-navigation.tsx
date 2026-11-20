@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 
 type SectionNavItem = {
   href: string;
@@ -14,7 +14,43 @@ type SectionNavItem = {
   count?: number;
   /** Builder sections show completion with a tick and "Complete" for screen readers. */
   complete?: boolean;
+  /**
+   * Fuller Builder state (docs/06 §55). Each state has its own shape, not just
+   * a colour: a filled tick, an exclamation mark, an empty ring or a dashed ring.
+   */
+  progress?: SectionProgress;
 };
+
+type SectionProgress = "complete" | "attention" | "incomplete" | "optional";
+
+const PROGRESS_LABEL: Record<SectionProgress, string> = {
+  complete: "Complete",
+  attention: "Needs attention",
+  incomplete: "Incomplete",
+  optional: "Optional",
+};
+
+function ProgressMark({ progress }: { progress: SectionProgress }) {
+  return (
+    <span
+      className={cn(
+        "flex size-5 shrink-0 items-center justify-center rounded-full border",
+        progress === "complete" && "border-success bg-success text-surface",
+        progress === "attention" && "border-warning-text bg-warning-text text-surface",
+        progress === "incomplete" && "border-border-control",
+        progress === "optional" && "border-dashed border-border-control",
+      )}
+    >
+      {progress === "complete" && <Check aria-hidden="true" className="size-3" strokeWidth={3} />}
+      {progress === "attention" && (
+        <span aria-hidden="true" className="text-caption leading-none font-bold">
+          !
+        </span>
+      )}
+      <span className="sr-only">{PROGRESS_LABEL[progress]}</span>
+    </span>
+  );
+}
 
 type SectionNavigationProps = {
   /** Names the landmark, for example "Request groups" or "Settings". */
@@ -37,10 +73,23 @@ type SectionNavigationProps = {
 function SectionNavigation({ label, items, currentHref, className }: SectionNavigationProps) {
   const pathname = usePathname();
   const active = currentHref ?? pathname;
+  const listRef = useRef<HTMLUListElement>(null);
+
+  // On phones the row scrolls sideways: keep the current section in view.
+  useEffect(() => {
+    const current = listRef.current?.querySelector<HTMLElement>("[aria-current=page]");
+    const list = listRef.current;
+    if (!current || !list || list.scrollWidth <= list.clientWidth) return;
+    list.scrollTo({
+      left: current.offsetLeft - (list.clientWidth - current.offsetWidth) / 2,
+      behavior: "instant",
+    });
+  }, [active]);
 
   return (
     <nav aria-label={label} className={cn("min-w-0", className)}>
       <ul
+        ref={listRef}
         className={cn(
           "relative flex [scrollbar-width:none] gap-2 overflow-x-auto pb-1",
           "lg:flex-col lg:gap-1 lg:overflow-visible lg:pb-0",
@@ -65,20 +114,15 @@ function SectionNavigation({ label, items, currentHref, className }: SectionNavi
               >
                 {item.icon && <span aria-hidden="true">{item.icon}</span>}
                 <span className="flex-1">{item.label}</span>
-                {item.complete !== undefined && (
-                  <span
-                    className={cn(
-                      "flex size-5 items-center justify-center rounded-full border",
-                      item.complete
-                        ? "border-success bg-success text-surface"
-                        : "border-border-control",
-                    )}
-                  >
-                    {item.complete && (
-                      <Check aria-hidden="true" className="size-3" strokeWidth={3} />
-                    )}
-                    <span className="sr-only">{item.complete ? "Complete" : "Incomplete"}</span>
-                  </span>
+                {(item.progress ??
+                  (item.complete !== undefined
+                    ? item.complete
+                      ? "complete"
+                      : "incomplete"
+                    : null)) && (
+                  <ProgressMark
+                    progress={item.progress ?? (item.complete ? "complete" : "incomplete")}
+                  />
                 )}
                 {item.count !== undefined && (
                   <span className="text-caption font-medium text-current tabular-nums opacity-80">
@@ -95,4 +139,4 @@ function SectionNavigation({ label, items, currentHref, className }: SectionNavi
 }
 
 export { SectionNavigation };
-export type { SectionNavItem };
+export type { SectionNavItem, SectionProgress };

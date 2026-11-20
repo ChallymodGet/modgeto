@@ -173,6 +173,24 @@ const PRICING_SECTION: Record<string, BuilderSection> = {
   STANDARD_DELIVERY_MODIFIER: "delivery-revisions",
 };
 
+/** Sends a pricing problem to the section that owns the item it points at. */
+function pricingSection(issue: DomainError, pricing: PricingConfig): BuilderSection {
+  const t = issue.target;
+  if (t) {
+    if (
+      t === "dependencies" ||
+      pricing.addOns.some((a) => a.id === t) ||
+      pricing.optionGroups.some((g) => g.id === t || g.options.some((o) => o.id === t))
+    ) {
+      return "addons-options";
+    }
+    if (t === "delivery" || pricing.deliveryOptions.some((d) => d.id === t)) {
+      return "delivery-revisions";
+    }
+  }
+  return PRICING_SECTION[issue.code] ?? "pricing";
+}
+
 /**
  * Every reason a Service cannot be published, each linked to the Builder section
  * that fixes it (docs/06 §58). Capacity and account verification are checked at
@@ -189,7 +207,7 @@ export function publishBlockers(service: ServiceForPublish): PublishBlocker[] {
   if (!service.categoryId) add("basics", "CATEGORY_REQUIRED", "Choose a category.");
 
   for (const issue of validatePricingConfig(service.pricing)) {
-    add(PRICING_SECTION[issue.code] ?? "pricing", issue.code, issue.message, issue.target);
+    add(pricingSection(issue, service.pricing), issue.code, issue.message, issue.target);
   }
 
   if (service.deliverableCount === 0 && service.pricing.mode !== "CUSTOM_QUOTE") {

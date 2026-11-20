@@ -53,18 +53,11 @@ import { TextLink } from "@/components/ui/text-link";
 import { toast } from "@/components/ui/toast";
 import { type ServiceLifecycle, effectiveCapacity, usedCapacity } from "@/lib/domain";
 import { formatRelative } from "@/lib/format";
-import { createLocalStore } from "@/lib/local-store";
 import { cn } from "@/lib/utils";
 import type { Service, Subscription } from "@/types";
+import { duplicateService } from "./builder-model";
 import { isPubliclyVisible } from "./model";
-
-type Overlay = {
-  lifecycle?: Record<string, ServiceLifecycle>;
-  order?: string[];
-  duplicates?: { id: string; fromId: string; createdAt: string }[];
-};
-
-const NO_OVERLAY: Overlay = {};
+import { newLocalId, saveService, setOrder, useMergedServices } from "./simulated-services";
 
 type Filter = "ALL" | ServiceLifecycle | "DISABLED";
 const FILTERS: { id: Filter; label: string }[] = [
@@ -98,11 +91,7 @@ export function ServicesScreen({
   siteUrl: string;
   now: string;
 }) {
-  const store = useMemo(
-    () => createLocalStore<Overlay>(`mg-sim-services:${creativeId}`),
-    [creativeId],
-  );
-  const overlay = store.useValue() ?? NO_OVERLAY;
+  const { services, store } = useMergedServices(base, creativeId);
   const [filter, setFilter] = useState<Filter>("ALL");
   const [query, setQuery] = useState("");
   const [reordering, setReordering] = useState(false);
@@ -110,39 +99,10 @@ export function ServicesScreen({
   const [archiving, setArchiving] = useState<Service | null>(null);
   const nowDate = useMemo(() => new Date(now), [now]);
 
-  // Apply simulated changes over the repository data.
-  const services = useMemo(() => {
-    const live = base.map((s) => ({ ...s, lifecycle: overlay.lifecycle?.[s.id] ?? s.lifecycle }));
-    const dups = (overlay.duplicates ?? []).flatMap((d) => {
-      const from = base.find((s) => s.id === d.fromId);
-      return from
-        ? [
-            {
-              ...from,
-              id: d.id,
-              name: `${from.name} (copy)`,
-              slug: `${from.slug}-copy`,
-              lifecycle: overlay.lifecycle?.[d.id] ?? ("DRAFT" as const),
-              publishedAt: null,
-              updatedAt: d.createdAt,
-              workSamples: [],
-            },
-          ]
-        : [];
-    });
-    const order = overlay.order ?? [];
-    return [...live, ...dups].sort((a, b) => {
-      const ai = order.indexOf(a.id);
-      const bi = order.indexOf(b.id);
-      if (ai !== -1 || bi !== -1) return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
-      return a.displayOrder - b.displayOrder;
-    });
-  }, [base, overlay]);
-
-  const update = (patch: Overlay) => store.write({ ...store.read(), ...patch });
   const setLifecycle = (s: Service, lifecycle: ServiceLifecycle, message: string) => {
-    update({ lifecycle: { ...(store.read()?.lifecycle ?? {}), [s.id]: lifecycle } });
-    toast.success(message);
+    if (saveService(store, { ...s, lifecycle, updatedAt: new Date().toISOString() })) {
+      toast.success(message);
+    } else toast.error("Couldn't save. Try again.");
   };
 
   const limit = subscription
@@ -173,7 +133,7 @@ export function ServicesScreen({
     const j = i + delta;
     if (j < 0 || j >= ids.length) return;
     [ids[i], ids[j]] = [ids[j], ids[i]];
-    update({ order: ids });
+    setOrder(store, ids);
     const name = published[i].name;
     setMoved(`${name} moved to position ${j + 1} of ${ids.length}.`);
     // If the pressed button is now disabled (top or bottom), keep focus on its partner.
@@ -232,17 +192,12 @@ export function ServicesScreen({
             )}
             <DropdownMenuItem
               onClick={() => {
-                const id = `local-${crypto.randomUUID()}`;
-                update({
-                  duplicates: [
-                    ...(store.read()?.duplicates ?? []),
-                    {
-                      id,
-                      fromId: s.id.startsWith("local-") ? s.id : s.id,
-                      createdAt: new Date().toISOString(),
-                    },
-                  ],
+                const copy = duplicateService(s, {
+                  id: newLocalId(),
+                  now: new Date().toISOString(),
+                  takenSlugs: services.map((x) => x.slug),
                 });
+                saveService(store, copy);
                 toast.success("Duplicated as a Draft", {
                   description: "Clients, Requests and Projects aren't copied.",
                 });

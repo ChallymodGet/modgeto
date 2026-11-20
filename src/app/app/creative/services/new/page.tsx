@@ -1,18 +1,22 @@
 import type { Metadata } from "next";
-import { PageContainer, PageHeader } from "@/components/layout/page";
-import { ScreenPlaceholder } from "@/components/layout/state-screens";
+import { Suspense } from "react";
+import { PageSkeleton } from "@/components/layout/route-helpers";
+import { getViewer } from "@/features/auth/viewer";
+import { repositories } from "@/features/data";
+import { NewService } from "@/features/services/new-service";
 
 export const metadata: Metadata = { title: "Create Service" };
 
+async function Create() {
+  const creative = (await getViewer()).creative!;
+  const services = await repositories.services.listByCreative(creative.userId);
+  return <NewService creative={creative} displayOrder={services.length + 1} />;
+}
+
 export default function Page() {
   return (
-    <PageContainer>
-      <PageHeader
-        title="Create Service"
-        description="Start a new Service. You can save it as a draft at any time."
-        back={{ href: "/app/creative/services", label: "Services" }}
-      />
-      <ScreenPlaceholder title="Create Service" phase="Phase 7.10" source="docs/04 §12" />
-    </PageContainer>
+    <Suspense fallback={<PageSkeleton />}>
+      <Create />
+    </Suspense>
   );
 }

@@ -3,7 +3,8 @@
 import { Ellipsis } from "lucide-react";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+
 import {
   Drawer,
   DrawerClose,
@@ -49,8 +50,7 @@ function TabIcon({ item, current }: { item: Pick<NavItem, "icon">; current: bool
  * Phone and tablet bottom navigation. Fixed to the bottom with the home
  * indicator inset, labelled icons only (no icon-only tabs), 3–5 destinations.
  */
-export function BottomNav({ label, set, className }: BottomNavProps) {
-  const pathname = usePathname();
+function BottomNavView({ label, set, className, pathname }: BottomNavProps & { pathname: string }) {
   const { bottom: items, more } = navSets[set];
   const [open, setOpen] = useState(false);
   const moreCurrent = more?.some((item) => isActive(pathname, item)) ?? false;
@@ -123,5 +123,22 @@ export function BottomNav({ label, set, className }: BottomNavProps) {
         )}
       </ul>
     </nav>
+  );
+}
+
+function BottomNavLive(props: BottomNavProps) {
+  return <BottomNavView {...props} pathname={usePathname()} />;
+}
+
+/**
+ * The current path is request data, so it streams in under Suspense. Until it
+ * does (and in prerendered shells of dynamic routes) the links render without
+ * a current page.
+ */
+export function BottomNav(props: BottomNavProps) {
+  return (
+    <Suspense fallback={<BottomNavView {...props} pathname="" />}>
+      <BottomNavLive {...props} />
+    </Suspense>
   );
 }

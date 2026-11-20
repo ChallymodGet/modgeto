@@ -415,6 +415,16 @@ AUTH-004 requires OTP expiry, attempt limits, a resend cooldown and rate limitin
 
 Rate limits per phone number and per IP are set in Phase 9 alongside the Termii integration. Password reset replies the same way whether or not the email has an account, so it can't be used to discover accounts.
 
+### D-042 Editing a live Service (approved 20 November 2026)
+
+SRV-002 asks for autosave, and SRV-007 lets a Creative edit a Published Service with changes affecting only future Requests. Neither says what Clients see while an edit is half done. Autosaving straight to a live Service could briefly publish an invalid one (for example, with every deliverable removed).
+
+Rule:
+
+- **Drafts** autosave directly.
+- **Live Services** (Published, Unavailable or Subscription Inactive): edits autosave as **unpublished changes**. Clients keep seeing the live version until the Creative chooses **Publish changes**, which runs the same publish checks (SRV-004). **Discard changes** returns to the live version.
+- Publishing changed Terms creates a new terms version (TRM, CLAUDE.md §4). Submitted Requests keep their snapshot (SRV-008).
+
 ---
 
 ## 6. Tracked Risks

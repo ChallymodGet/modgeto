@@ -2,6 +2,7 @@
 
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import { cn } from "@/lib/utils";
 import { isActive, navSets, type NavSet } from "./nav-items";
 
@@ -12,8 +13,7 @@ type PillNavProps = { label: string; set: NavSet; className?: string };
  * white pill with heavier text and `aria-current="page"`, so it never relies
  * on colour alone.
  */
-export function PillNav({ label, set, className }: PillNavProps) {
-  const pathname = usePathname();
+function PillNavView({ label, set, className, pathname }: PillNavProps & { pathname: string }) {
   const items = navSets[set].top;
   return (
     <nav aria-label={label} className={className}>
@@ -40,5 +40,22 @@ export function PillNav({ label, set, className }: PillNavProps) {
         })}
       </ul>
     </nav>
+  );
+}
+
+function PillNavLive(props: PillNavProps) {
+  return <PillNavView {...props} pathname={usePathname()} />;
+}
+
+/**
+ * The current path is request data, so it streams in under Suspense. Until it
+ * does (and in prerendered shells of dynamic routes) the links render without
+ * a current page.
+ */
+export function PillNav(props: PillNavProps) {
+  return (
+    <Suspense fallback={<PillNavView {...props} pathname="" />}>
+      <PillNavLive {...props} />
+    </Suspense>
   );
 }
