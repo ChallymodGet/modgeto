@@ -48,6 +48,12 @@ describe("Service Builder model", () => {
     expect(Object.values(progress).every((p) => p === "complete")).toBe(true);
   });
 
+  it("ignores payment methods that were removed or paused (SRV-025)", () => {
+    const codes = (ids: string[]) => blockersFor(brand, ada, ids).map((b) => b.code);
+    expect(codes(brand.paymentMethodIds)).toEqual([]);
+    expect(codes([])).toContain("PAYMENT_METHOD_REQUIRED");
+  });
+
   it("duplicates configuration as a Draft without history (SRV-015)", () => {
     const copy = duplicateService(brand, {
       id: "local-2",

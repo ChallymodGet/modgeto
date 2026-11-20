@@ -64,8 +64,22 @@ export function isBuilderSection(value: string | null | undefined): value is Bui
   return (BUILDER_SECTIONS as readonly string[]).includes(value ?? "");
 }
 
-export function blockersFor(service: Service, creative: CreativeProfile): PublishBlocker[] {
-  return publishBlockers(toServiceForPublish(service, creative));
+/**
+ * Publish problems. Pass the Creative's offered payment method ids so a
+ * removed or paused method no longer counts towards SRV-025.
+ */
+export function blockersFor(
+  service: Service,
+  creative: CreativeProfile,
+  offeredMethodIds?: readonly string[],
+): PublishBlocker[] {
+  const input = toServiceForPublish(service, creative);
+  if (offeredMethodIds) {
+    input.selectedPaymentMethodCount = service.paymentMethodIds.filter((id) =>
+      offeredMethodIds.includes(id),
+    ).length;
+  }
+  return publishBlockers(input);
 }
 
 /** Whether an optional section has any content yet. */

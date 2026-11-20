@@ -4,7 +4,7 @@
  */
 import { ChevronLeft } from "lucide-react";
 import NextLink from "next/link";
-import type { ComponentProps, ReactNode } from "react";
+import { type ComponentProps, type ReactNode, useId } from "react";
 import { SectionNavigation, type SectionNavItem } from "@/components/ui/section-navigation";
 import { cn } from "@/lib/utils";
 
@@ -220,5 +220,48 @@ export function SectionLayout({
       </div>
       <div className="min-w-0">{children}</div>
     </div>
+  );
+}
+
+/**
+ * A titled white panel for a group of related fields or content inside a
+ * page section (Service Builder blocks, Public Profile, Settings).
+ */
+export function Panel({
+  title,
+  description,
+  actions,
+  headingLevel: Heading = "h3",
+  id,
+  children,
+  className,
+}: {
+  title: string;
+  description?: ReactNode;
+  actions?: ReactNode;
+  headingLevel?: "h2" | "h3";
+  /** Anchor for in-page links, e.g. "#availability". */
+  id?: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  const headingId = useId();
+  return (
+    <section
+      id={id}
+      aria-labelledby={headingId}
+      className={cn("flex scroll-mt-24 flex-col gap-5 rounded-xl bg-surface p-5 md:p-6", className)}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex min-w-0 flex-col gap-1">
+          <Heading id={headingId} className="text-h4 text-foreground">
+            {title}
+          </Heading>
+          {description && <p className="text-body-sm text-foreground-secondary">{description}</p>}
+        </div>
+        {actions}
+      </div>
+      {children}
+    </section>
   );
 }

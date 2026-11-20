@@ -10,7 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowLeft,
   ArrowRight,
-  Check,
   CircleCheck,
   Landmark,
   Link2,
@@ -23,7 +22,6 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { Button, ButtonLink } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { FormField, FormFieldset } from "@/components/ui/form-field";
 import { IconButton } from "@/components/ui/icon-button";
 import { Input } from "@/components/ui/input";
@@ -42,10 +40,16 @@ import {
   businessPreferencesSchema,
   creativeLinkSchema,
   creativeProfileSchema,
-  paymentMethodSchema,
 } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
 import { type UsernameCheck, checkUsername } from "./actions";
+import {
+  AvailabilityRadio,
+  CurrencySelect,
+  DisciplineCheckboxes,
+  LINK_TYPES,
+  PaymentMethodForm,
+} from "./profile-fields";
 
 // ------------------------------------------------------------------ draft
 
@@ -76,44 +80,6 @@ const STEPS = [
   { id: "payment", label: "Payment setup" },
 ] as const;
 type StepId = "intro" | (typeof STEPS)[number]["id"] | "done";
-
-const DISCIPLINES = [
-  { id: "DESIGN", label: "Design" },
-  { id: "DEVELOPMENT", label: "Development" },
-  { id: "WRITING", label: "Writing" },
-  { id: "MOTION_MEDIA", label: "Motion and Media" },
-];
-
-const LINK_TYPES = [
-  { value: "PORTFOLIO", label: "Portfolio" },
-  { value: "BEHANCE", label: "Behance" },
-  { value: "DRIBBBLE", label: "Dribbble" },
-  { value: "LINKEDIN", label: "LinkedIn" },
-  { value: "GITHUB", label: "GitHub" },
-  { value: "OTHER", label: "Other" },
-];
-
-const METHOD_TYPES = [
-  {
-    value: "BANK_TRANSFER",
-    label: "Bank transfer",
-    hint: "Account name, bank and account number.",
-  },
-  {
-    value: "PAYPAL",
-    label: "PayPal",
-    hint: "Your PayPal email or link, and anything Clients should add to the note.",
-  },
-  { value: "MOBILE_MONEY", label: "Mobile money", hint: "Provider, account name and number." },
-  { value: "CUSTOM", label: "Other method", hint: "Exactly how Clients should pay you." },
-];
-
-const CURRENCIES = [
-  { value: "NGN", label: "Nigerian naira (₦)" },
-  { value: "USD", label: "US dollar ($)" },
-  { value: "GBP", label: "British pound (£)" },
-  { value: "EUR", label: "Euro (€)" },
-];
 
 // ------------------------------------------------------------------ shared
 
@@ -519,23 +485,7 @@ function ProfileStep({
         control={form.control}
         name="disciplines"
         render={({ field }) => (
-          <FormFieldset legend="What do you do?" description="Choose all that apply." optional>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {DISCIPLINES.map((d) => (
-                <label key={d.id} className="flex cursor-pointer items-center gap-3">
-                  <Checkbox
-                    checked={field.value.includes(d.id)}
-                    onCheckedChange={(checked) =>
-                      field.onChange(
-                        checked ? [...field.value, d.id] : field.value.filter((x) => x !== d.id),
-                      )
-                    }
-                  />
-                  <span className="text-body-sm text-foreground">{d.label}</span>
-                </label>
-              ))}
-            </div>
-          </FormFieldset>
+          <DisciplineCheckboxes value={field.value} onChange={field.onChange} />
         )}
       />
       <FormFieldset legend="Portfolio and professional links" description="Up to five." optional>
@@ -653,27 +603,7 @@ function BusinessStep({
       <Controller
         control={form.control}
         name="availability"
-        render={({ field }) => (
-          <FormFieldset legend="Are you taking new Projects?">
-            <RadioGroup value={field.value} onValueChange={(v) => field.onChange(v)}>
-              <RadioItem
-                value="AVAILABLE"
-                label="Available"
-                description="Clients can send you Requests."
-              />
-              <RadioItem
-                value="LIMITED"
-                label="Limited availability"
-                description="Clients can still send Requests; you can add a note."
-              />
-              <RadioItem
-                value="UNAVAILABLE"
-                label="Unavailable"
-                description="Your profile stays visible, but new Requests are paused."
-              />
-            </RadioGroup>
-          </FormFieldset>
-        )}
+        render={({ field }) => <AvailabilityRadio value={field.value} onChange={field.onChange} />}
       />
       {availability === "LIMITED" && (
         <Controller
@@ -694,22 +624,7 @@ function BusinessStep({
       <Controller
         control={form.control}
         name="defaultCurrency"
-        render={({ field }) => (
-          <FormField label="Default currency" description="Used for new Services.">
-            <Select items={CURRENCIES} value={field.value} onValueChange={(v) => field.onChange(v)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {CURRENCIES.map((c) => (
-                  <SelectItem key={c.value} value={c.value}>
-                    {c.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </FormField>
-        )}
+        render={({ field }) => <CurrencySelect value={field.value} onChange={field.onChange} />}
       />
       <Controller
         control={form.control}
@@ -779,12 +694,6 @@ function PaymentStep({
 }) {
   const methods = draft.paymentMethods ?? [];
   const [adding, setAdding] = useState(methods.length === 0);
-  const form = useForm({
-    resolver: zodResolver(paymentMethodSchema),
-    defaultValues: { type: "BANK_TRANSFER" as const, label: "", instructions: "" },
-  });
-  const type = useWatch({ control: form.control, name: "type" });
-  const hint = METHOD_TYPES.find((m) => m.value === type)?.hint;
 
   return (
     <div className="flex flex-col gap-6">
@@ -823,80 +732,14 @@ function PaymentStep({
       )}
 
       {adding ? (
-        <form
-          noValidate
-          className="flex flex-col gap-5 rounded-lg border border-border p-4 md:p-5"
-          onSubmit={form.handleSubmit((v) => {
+        <PaymentMethodForm
+          title="Add a payment method"
+          onSave={(v) => {
             onChange([...methods, v]);
-            form.reset({ type: "BANK_TRANSFER", label: "", instructions: "" });
             setAdding(false);
-          })}
-        >
-          <p className="text-label text-foreground">Add a payment method</p>
-          <Controller
-            control={form.control}
-            name="type"
-            render={({ field }) => (
-              <FormField label="Type">
-                <Select
-                  items={METHOD_TYPES}
-                  value={field.value}
-                  onValueChange={(v) => field.onChange(v)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {METHOD_TYPES.map((m) => (
-                      <SelectItem key={m.value} value={m.value}>
-                        {m.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormField>
-            )}
-          />
-          <Controller
-            control={form.control}
-            name="label"
-            render={({ field, fieldState }) => (
-              <FormField
-                label="Name Clients see"
-                description="For example: Bank transfer (Naira)."
-                error={fieldState.error?.message}
-                required
-              >
-                <Input {...field} />
-              </FormField>
-            )}
-          />
-          <Controller
-            control={form.control}
-            name="instructions"
-            render={({ field, fieldState }) => (
-              <FormField
-                label="Payment details"
-                description={hint}
-                error={fieldState.error?.message}
-                required
-              >
-                <Textarea {...field} rows={4} maxLength={500} />
-              </FormField>
-            )}
-          />
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Button type="submit" variant="secondary">
-              <Check aria-hidden="true" />
-              Save method
-            </Button>
-            {methods.length > 0 && (
-              <Button type="button" variant="ghost" onClick={() => setAdding(false)}>
-                Cancel
-              </Button>
-            )}
-          </div>
-        </form>
+          }}
+          onCancel={methods.length > 0 ? () => setAdding(false) : undefined}
+        />
       ) : (
         <Button
           type="button"

@@ -7,6 +7,7 @@
  */
 import { ArrowDown, ArrowUp, CircleAlert, Trash2 } from "lucide-react";
 import { type ReactNode, useId, useState } from "react";
+import { Panel } from "@/components/layout/page";
 import { FormField } from "@/components/ui/form-field";
 import { IconButton } from "@/components/ui/icon-button";
 import { Input } from "@/components/ui/input";
@@ -29,7 +30,6 @@ import {
   percentToBps,
   toDecimalString,
 } from "@/lib/domain";
-import { cn } from "@/lib/utils";
 import type { Turnaround, TurnaroundUnit } from "@/types";
 
 const SYMBOL: Record<Currency, string> = { NGN: "₦", USD: "$", GBP: "£", EUR: "€" };
@@ -308,38 +308,7 @@ export function TurnaroundField({
 }
 
 /** A titled block inside a Builder section. */
-export function BuilderBlock({
-  title,
-  description,
-  actions,
-  children,
-  className,
-}: {
-  title: string;
-  description?: ReactNode;
-  actions?: ReactNode;
-  children: ReactNode;
-  className?: string;
-}) {
-  const id = useId();
-  return (
-    <section
-      aria-labelledby={id}
-      className={cn("flex flex-col gap-5 rounded-xl bg-surface p-5 md:p-6", className)}
-    >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-col gap-1">
-          <h3 id={id} className="text-h4 text-foreground">
-            {title}
-          </h3>
-          {description && <p className="text-body-sm text-foreground-secondary">{description}</p>}
-        </div>
-        {actions}
-      </div>
-      {children}
-    </section>
-  );
-}
+export const BuilderBlock = Panel;
 
 /**
  * One item in a reorderable list: a header with its name and Move up / Move

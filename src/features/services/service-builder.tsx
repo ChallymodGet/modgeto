@@ -10,15 +10,8 @@
  */
 import { CircleAlert, Cloud, CloudOff, LoaderCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMounted } from "@/lib/use-mounted";
 import { BuilderShell } from "@/components/layout/flow-shells";
 import { ServiceStatusBadge } from "@/components/service/service-card";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -37,6 +30,7 @@ import type {
   ServiceCategory,
   Subscription,
 } from "@/types";
+import { useCreativeProfile } from "@/features/creative-profile/simulated-profile";
 import { BriefSectionEditor } from "./brief-builder";
 import { SectionBlockers } from "./builder-fields";
 import {
@@ -84,8 +78,6 @@ const SECTION_COMPONENTS: Record<
   "work-samples": WorkSamplesSection,
 };
 
-const subscribeNothing = () => () => {};
-
 type Props = {
   serviceId: string;
   /** The repository version, or null for a Service created in this browser. */
@@ -99,14 +91,15 @@ type Props = {
   siteUrl: string;
 };
 
-export function ServiceBuilder(props: Props) {
+export function ServiceBuilder(baseProps: Props) {
+  const { creative, paymentMethods } = useCreativeProfile(
+    baseProps.creative,
+    baseProps.paymentMethods,
+  );
+  const props = { ...baseProps, creative, paymentMethods };
   const { value, store } = useServiceStore(props.creative.userId);
   // The store only exists in the browser: wait for it before reading the draft.
-  const mounted = useSyncExternalStore(
-    subscribeNothing,
-    () => true,
-    () => false,
-  );
+  const mounted = useMounted();
   const live = value.saved?.[props.serviceId] ?? props.base;
 
   if (!mounted) return <BuilderSkeleton />;
@@ -239,7 +232,14 @@ function BuilderEditor({
   }, [section, serviceId, store]);
 
   // ---- Derived state ------------------------------------------------------
-  const blockers = useMemo(() => blockersFor(draft, creative), [draft, creative]);
+  const offeredIds = useMemo(
+    () => paymentMethods.filter((m) => m.active).map((m) => m.id),
+    [paymentMethods],
+  );
+  const blockers = useMemo(
+    () => blockersFor(draft, creative, offeredIds),
+    [draft, creative, offeredIds],
+  );
   const progress = sectionProgress(draft, blockers, [...visited, section]);
   const others = allServices.filter((s) => s.id !== serviceId);
   const takenSlugs = others.map((s) => s.slug).filter(Boolean);

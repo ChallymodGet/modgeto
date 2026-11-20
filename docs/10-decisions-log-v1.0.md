@@ -425,6 +425,10 @@ Rule:
 - **Live Services** (Published, Unavailable or Subscription Inactive): edits autosave as **unpublished changes**. Clients keep seeing the live version until the Creative chooses **Publish changes**, which runs the same publish checks (SRV-004). **Discard changes** returns to the live version.
 - Publishing changed Terms creates a new terms version (TRM, CLAUDE.md §4). Submitted Requests keep their snapshot (SRV-008).
 
+### D-043 Notification email preferences (approved 20 November 2026, resolves roadmap Q15)
+
+PRD NOT-002 lists the events that notify users In-app + Email but specifies no preference controls. Users get a switch per event for **email**. **In-app** notifications are always on and cannot be turned off, so nothing that moves a Request or Project is missed. Email defaults to on. SMS is never used for routine notifications (CLAUDE.md §7). Turning an email off never blocks or reverses the business action.
+
 ---
 
 ## 6. Tracked Risks

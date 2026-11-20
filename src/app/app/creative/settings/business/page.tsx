@@ -1,17 +1,31 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Section } from "@/components/layout/page";
-import { ScreenPlaceholder } from "@/components/layout/state-screens";
+import { PageSkeleton } from "@/components/layout/route-helpers";
+import { getViewer } from "@/features/auth/viewer";
+import { repositories } from "@/features/data";
+import { BusinessPreferences } from "@/features/creative-profile/settings-screens";
 
 export const metadata: Metadata = { title: "Business preferences" };
+
+async function Content() {
+  const viewer = await getViewer();
+  const creative = viewer.creative!;
+  const [paymentMethods, services] = await Promise.all([
+    repositories.creatives.listPaymentMethods(creative.userId),
+    repositories.services.listByCreative(creative.userId),
+  ]);
+  return (
+    <BusinessPreferences creative={creative} paymentMethods={paymentMethods} services={services} />
+  );
+}
 
 export default function Page() {
   return (
     <Section title="Business preferences">
-      <ScreenPlaceholder
-        title="Business preferences"
-        phase="Phase 7.11"
-        source="docs/04 §16, PROF-004"
-      />
+      <Suspense fallback={<PageSkeleton />}>
+        <Content />
+      </Suspense>
     </Section>
   );
 }
