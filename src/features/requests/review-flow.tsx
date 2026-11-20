@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   UserRound,
 } from "lucide-react";
+import { answerText } from "@/components/brief/brief-answers";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
@@ -27,8 +28,6 @@ import { withNext } from "@/features/auth/policy";
 import { currentIdentity, subscribeIdentity } from "@/features/auth/simulated-auth";
 import { toPricingConfig } from "@/features/services/model";
 import {
-  type AnswerValue,
-  type BriefQuestion,
   calculatePrice,
   isQuestionVisible,
   validateBriefAnswers,
@@ -52,30 +51,6 @@ type Props = {
   reviewHref: string;
   submittedHref: string;
 };
-
-function answerText(
-  q: BriefQuestion,
-  value: AnswerValue | undefined,
-  files: Record<string, { name: string }> = {},
-): string | null {
-  if (value === undefined || value === "" || (Array.isArray(value) && value.length === 0))
-    return null;
-  const label = (id: string) =>
-    [...(q.choices ?? []), ...(q.visualExamples ?? [])].find((c) => c.id === id)?.label ?? id;
-  switch (q.type) {
-    case "SINGLE_CHOICE":
-    case "DROPDOWN":
-      return label(String(value));
-    case "MULTIPLE_CHOICE":
-    case "VISUAL_SELECTION":
-      return (value as string[]).map(label).join(", ");
-    case "FILE":
-    case "MULTIPLE_FILE":
-      return (value as string[]).map((id) => files[id]?.name ?? "Uploaded file").join(", ");
-    default:
-      return String(value);
-  }
-}
 
 function Card({
   title,

@@ -19,7 +19,7 @@ import { SelectionCard, SelectionCardGroup } from "@/components/ui/selection-car
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
-import { type Currency, formatMoney, money, toDecimalString } from "@/lib/domain";
+import { type Currency, formatMoney, money } from "@/lib/domain";
 import { formatDate } from "@/lib/format";
 import {
   notReceivedSchema,
@@ -37,11 +37,19 @@ import type {
 const fmt = (amountMinor: bigint, currency: Currency) => formatMoney(money(amountMinor, currency));
 
 /** The one sentence every payment surface carries. */
-export function ExternalPaymentNote({ className }: { className?: string }) {
+export function ExternalPaymentNote({
+  className,
+  audience = "CLIENT",
+}: {
+  className?: string;
+  audience?: "CLIENT" | "CREATIVE";
+}) {
   return (
     <p className={cn("flex items-start gap-2 text-body-sm text-foreground-secondary", className)}>
       <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-foreground-muted" />
-      Modgeto does not collect Client Project payments. You pay the Creative directly.
+      {audience === "CLIENT"
+        ? "Modgeto does not collect Client Project payments. You pay the Creative directly."
+        : "Modgeto does not collect Client Project payments. Clients pay you directly."}
     </p>
   );
 }
@@ -263,12 +271,9 @@ export function PaymentConfirmationForm({
   const [busy, setBusy] = useState(false);
   const confirmForm = useForm({
     resolver: zodResolver(paymentConfirmationSchema(currency)),
-    // Pre-filled with the declared amount (exact decimal, no floats); edit it if less arrived.
     defaultValues: {
-      amountReceived: toDecimalString(money(declaration.declaredAmountMinor, currency)).replace(
-        /\.00$/,
-        "",
-      ),
+      // Empty on purpose: the Creative enters what actually arrived (docs/06 §62, PAY-005).
+      amountReceived: "",
     },
   });
   const noteForm = useForm({
@@ -377,6 +382,17 @@ export function PaymentConfirmationForm({
 
 // ------------------------------------------------------------------ PaymentRecord
 
+/** "Partly received" when the Creative confirmed less than was declared (PAY-005). */
+function declarationStatus(d: PaymentDeclaration, confirmations: PaymentConfirmation[]) {
+  if (d.resolution !== "CONFIRMED") return DECLARATION_STATUS[d.resolution];
+  const received = confirmations
+    .filter((c) => c.declarationId === d.id)
+    .reduce((sum, c) => sum + c.confirmedAmountMinor, 0n);
+  return received < d.declaredAmountMinor
+    ? ({ label: "Partly received", intent: "warning" } as const)
+    : DECLARATION_STATUS.CONFIRMED;
+}
+
 const DECLARATION_STATUS = {
   PENDING: { label: "Payment declared", intent: "warning" },
   CONFIRMED: { label: "Payment confirmed", intent: "success" },
@@ -418,7 +434,7 @@ export function PaymentRecord({
           {e.kind === "declaration" && (
             <>
               <div className="flex flex-col gap-1">
-                <StatusBadge status={DECLARATION_STATUS[e.item.resolution]} />
+                <StatusBadge status={declarationStatus(e.item, confirmations)} />
                 <p className="text-body-sm text-foreground-secondary">
                   {e.item.paymentMethod.label} on {formatDate(e.item.paidOn)}
                   {e.item.reference ? ` · Ref ${e.item.reference}` : ""}

@@ -131,8 +131,10 @@ export function ClarificationPanel({
 
 type TermsPanelProps = {
   terms: TermsSnapshot;
-  /** When the viewer already accepted this version. */
+  /** When this version was accepted. */
   acceptedAt?: string | null;
+  /** Who accepted, for a viewer who isn't the Client, e.g. "Kemi Adeyemi". Defaults to "You". */
+  acceptedBy?: string;
   /** Omit for read-only display (e.g. the Creative's view). */
   onAccept?: () => Promise<void> | void;
   /** `final` is the explicit acceptance before Ready to Start (D-002). */
@@ -155,6 +157,7 @@ type TermsPanelProps = {
 export function TermsPanel({
   terms,
   acceptedAt,
+  acceptedBy = "You",
   onAccept,
   mode = "final",
   acknowledgement,
@@ -199,7 +202,7 @@ export function TermsPanel({
       ) : acceptedAt ? (
         <p className="flex items-center gap-2 text-body-sm text-success-text">
           <CircleCheck aria-hidden="true" className="size-4" />
-          You accepted version {terms.version} on {formatDate(acceptedAt)}.
+          {acceptedBy} accepted version {terms.version} on {formatDate(acceptedAt)}.
         </p>
       ) : (
         onAccept && (

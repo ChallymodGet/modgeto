@@ -4,7 +4,13 @@ import NextLink from "next/link";
 import { MoneyDisplay } from "@/components/service/price";
 import { DeliverableList, RevisionSummary, TurnaroundSummary } from "@/components/service/scope";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { type Currency, type PriceBreakdown, type PriceLine, formatMoney } from "@/lib/domain";
+import {
+  type Currency,
+  type PriceBreakdown,
+  type PriceLine,
+  type RequestView,
+  formatMoney,
+} from "@/lib/domain";
 import { formatDate, formatRelative } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { Request, ScopeSnapshot } from "@/types";
@@ -56,6 +62,8 @@ type RequestCardProps = {
   /** Fixed "now" so server and client render the same relative time. */
   now?: Date;
   headingLevel?: "h2" | "h3";
+  /** Pass the full view so a pending Client reply shows (D-027). */
+  view?: RequestView;
 };
 
 /**
@@ -70,11 +78,8 @@ export function RequestCard({
   agreedMinor,
   now,
   headingLevel: Heading = "h3",
+  view = { status: request.status, awaitingClientReason: request.awaitingClientReason },
 }: RequestCardProps) {
-  const view = {
-    status: request.status,
-    awaitingClientReason: request.awaitingClientReason,
-  };
   return (
     <article className="group/card relative flex flex-col gap-3 rounded-lg border border-border bg-surface p-4 transition-colors hover:border-border-strong has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-focus md:p-5">
       <div className="flex items-start justify-between gap-4">

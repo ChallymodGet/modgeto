@@ -98,25 +98,31 @@ export function RequestStatus({
   const label = requestLabel(view, actor);
   const text = nextStep(view, actor, counterpart);
   if (variant === "banner") {
+    // A container query, so it stacks in a narrow side panel as well as on phones.
     return (
-      <div
-        className={cn(
-          "flex flex-col gap-2 rounded-lg border p-4 sm:flex-row sm:items-center sm:gap-4",
-          label.intent === "warning" && "border-warning-border bg-warning-subtle",
-          label.intent === "success" && "border-success-border bg-success-subtle",
-          label.intent === "info" && "border-info-border bg-info-subtle",
-          (label.intent === "neutral" || label.intent === "danger") && "border-border bg-surface",
-          className,
-        )}
-      >
-        <StatusBadge status={label} size="md" className="bg-surface" />
-        <p className="flex items-start gap-2 text-body-sm text-foreground">
-          <ArrowRight aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-foreground-muted" />
-          <span>
-            <span className="sr-only">Next step: </span>
-            {text}
-          </span>
-        </p>
+      <div className="@container">
+        <div
+          className={cn(
+            "flex flex-col items-start gap-2 rounded-lg border p-4 @md:flex-row @md:items-center @md:gap-4",
+            label.intent === "warning" && "border-warning-border bg-warning-subtle",
+            label.intent === "success" && "border-success-border bg-success-subtle",
+            label.intent === "info" && "border-info-border bg-info-subtle",
+            (label.intent === "neutral" || label.intent === "danger") && "border-border bg-surface",
+            className,
+          )}
+        >
+          <StatusBadge status={label} size="md" className="bg-surface" />
+          <p className="flex items-start gap-2 text-body-sm text-foreground">
+            <ArrowRight
+              aria-hidden="true"
+              className="mt-0.5 size-4 shrink-0 text-foreground-muted"
+            />
+            <span>
+              <span className="sr-only">Next step: </span>
+              {text}
+            </span>
+          </p>
+        </div>
       </div>
     );
   }
