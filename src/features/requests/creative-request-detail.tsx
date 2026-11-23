@@ -54,11 +54,12 @@ import {
   isClosed,
   money,
 } from "@/lib/domain";
-import { formatDate, formatDateTime } from "@/lib/format";
+import { formatDate } from "@/lib/format";
 import { closureReasonSchema, paymentAdjustmentSchema } from "@/lib/schemas";
 import type { RequestDetail } from "@/types";
 import { requestHistory, requestView } from "./model";
 import { ProposalEditor } from "./proposal-editor";
+import { HistoryList, PaymentFacts } from "./request-detail-parts";
 import {
   type CreativeCommand,
   applyCreativeCommand,
@@ -267,12 +268,20 @@ export function CreativeRequestDetail({
                 responses={detail.responses}
                 names={{ CREATIVE: creativeName, CLIENT: clientName }}
                 viewerRole="CREATIVE"
+                composerLabel={
+                  can("REQUEST_CLARIFICATION") ? "Ask the Client a question" : "Reply to the Client"
+                }
                 onSend={
                   can("REQUEST_CLARIFICATION")
                     ? (message) => {
                         run({ type: "ASK", message }, `Question sent to ${clientName}.`);
                       }
-                    : undefined
+                    : open
+                      ? (message) => {
+                          // A note about the open proposal; the status doesn't change (D-027).
+                          run({ type: "NOTE", message }, `Reply sent to ${clientName}.`);
+                        }
+                      : undefined
                 }
               />
             </div>
@@ -309,34 +318,7 @@ export function CreativeRequestDetail({
               description="Check your account before confirming what arrived: only the amount you confirm counts."
             >
               <ExternalPaymentNote audience="CREATIVE" />
-              <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                {[
-                  [
-                    "Project total",
-                    detail.agreement
-                      ? formatMoney(money(detail.agreement.agreedPriceMinor, currency))
-                      : "Not agreed yet",
-                  ],
-                  [
-                    "Commitment",
-                    r.requiredCommitmentMinor
-                      ? formatMoney(money(r.requiredCommitmentMinor, currency))
-                      : "None",
-                  ],
-                  ["Confirmed", formatMoney(money(r.confirmedMinor, currency))],
-                  [
-                    "Still due",
-                    r.requiredCommitmentMinor && r.requiredCommitmentMinor > r.confirmedMinor
-                      ? formatMoney(money(r.requiredCommitmentMinor - r.confirmedMinor, currency))
-                      : formatMoney(money(0n, currency)),
-                  ],
-                ].map(([k, v]) => (
-                  <div key={k} className="flex flex-col gap-0.5">
-                    <dt className="text-caption text-foreground-muted">{k}</dt>
-                    <dd className="text-body-sm font-medium text-foreground tabular-nums">{v}</dd>
-                  </div>
-                ))}
-              </dl>
+              <PaymentFacts detail={detail} />
               {pending.map((d) => (
                 <PaymentConfirmationForm
                   key={d.id}
@@ -376,20 +358,7 @@ export function CreativeRequestDetail({
           )}
 
           <Panel id="history" headingLevel="h2" title="History">
-            <ol className="flex flex-col gap-3 border-l border-border pl-4">
-              {history.map((h, i) => (
-                <li key={`${h.at}-${i}`} className="relative flex flex-col gap-0.5">
-                  <span
-                    aria-hidden="true"
-                    className="absolute top-1.5 -left-[1.3rem] size-2 rounded-full bg-border-strong"
-                  />
-                  <span className="text-body-sm text-foreground">{h.text}</span>
-                  <time dateTime={h.at} className="text-caption text-foreground-secondary">
-                    {formatDateTime(h.at)}
-                  </time>
-                </li>
-              ))}
-            </ol>
+            <HistoryList entries={history} />
           </Panel>
         </div>
       </div>

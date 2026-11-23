@@ -56,6 +56,8 @@ export type CreativeCommand =
   | { type: "ACCEPT" }
   | { type: "PROPOSE"; proposal: ProposalDraft }
   | { type: "ASK"; message: string }
+  /** A reply about an open proposal: no status change (D-027). */
+  | { type: "NOTE"; message: string }
   | { type: "DECLINE"; reason: string | null }
   | { type: "CONFIRM_PAYMENT"; declarationId: string; amountMinor: bigint }
   | { type: "NOT_RECEIVED"; declarationId: string; note: string }
@@ -64,6 +66,8 @@ export type CreativeCommand =
 
 export type ClientCommand =
   | { type: "REPLY"; message: string }
+  /** A question about an open proposal: no status change; it can still be accepted (D-027). */
+  | { type: "ASK_ABOUT_PROPOSAL"; message: string }
   | { type: "ACCEPT_PROPOSAL" }
   | { type: "REJECT_PROPOSAL"; note: string | null }
   | { type: "ACCEPT_TERMS" }
@@ -99,6 +103,43 @@ export function openProposal(detail: RequestDetail): CommercialProposal | null {
       .filter((p) => p.status === "PROPOSED")
       .sort((a, b) => b.version - a.version)[0] ?? null
   );
+}
+
+/** A message about the open proposal leaves the status as it is (D-027). */
+function proposalMessage(
+  detail: RequestDetail,
+  ctx: CommandContext,
+  role: RequestResponse["authorRole"],
+  message: string,
+): Result<CommandResult> {
+  const proposal = openProposal(detail);
+  const r = detail.request;
+  if (
+    !proposal ||
+    r.status !== "AWAITING_CLIENT" ||
+    r.awaitingClientReason === "CLARIFICATION_REQUESTED"
+  ) {
+    return err("NO_OPEN_PROPOSAL", "There's no open proposal to discuss.");
+  }
+  if (!message.trim()) return err("MESSAGE_REQUIRED", "Write your message.");
+  return ok({
+    detail: {
+      ...detail,
+      request: { ...r, updatedAt: ctx.now },
+      responses: [
+        ...detail.responses,
+        response(
+          detail,
+          ctx,
+          role,
+          role === "CLIENT" ? "CLIENT_CLARIFICATION" : "PROPOSAL_NOTE",
+          message.trim(),
+          proposal.id,
+        ),
+      ],
+    },
+    events: ["RequestResponseCreated"],
+  });
 }
 
 /** The current commercial position: the agreement if there is one, else the submission. */
@@ -274,6 +315,9 @@ export function applyCreativeCommand(
         events: t.value.events,
       });
     }
+
+    case "NOTE":
+      return proposalMessage(detail, ctx, "CREATIVE", command.message);
 
     case "DECLINE": {
       const t = step(detail, { type: "DECLINE" }, "CREATIVE", ctx);
@@ -452,6 +496,9 @@ export function applyClientCommand(
         events: t.value.events,
       });
     }
+
+    case "ASK_ABOUT_PROPOSAL":
+      return proposalMessage(detail, ctx, "CLIENT", command.message);
 
     case "ACCEPT_PROPOSAL": {
       const proposal = openProposal(detail);

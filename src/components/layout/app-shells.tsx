@@ -42,7 +42,8 @@ function TopBar({
           <span className="hidden sm:inline-flex">
             <Wordmark />
           </span>
-          <LogoMark className="size-8 sm:hidden" />
+          <LogoMark className="size-8 sm:hidden" />{" "}
+          {/* The space keeps "modgeto Client" readable inside the label (WCAG 2.5.3). */}
           <span className="hidden rounded-full border border-border px-2.5 py-0.5 text-caption font-medium text-foreground-secondary xl:inline">
             {workspaceLabel}
           </span>

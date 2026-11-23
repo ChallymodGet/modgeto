@@ -182,7 +182,12 @@ describe("publish blockers (SRV-004)", () => {
         addOns: [{ id: "ao", name: "Guide", amountMinor: 0n, allowsQuantity: false, active: true }],
         deliveryOptions: [
           ...ready.pricing.deliveryOptions,
-          { id: "rush", label: "Rush", isStandard: false, modifier: { kind: "PERCENT", bps: 20_000 } },
+          {
+            id: "rush",
+            label: "Rush",
+            isStandard: false,
+            modifier: { kind: "PERCENT", bps: 20_000 },
+          },
         ],
       },
     }).map((b) => [b.section, b.code]);

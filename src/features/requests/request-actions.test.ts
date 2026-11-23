@@ -10,6 +10,7 @@ import {
   requestState,
 } from "./request-actions";
 import { transitionRequest } from "@/lib/domain";
+import { clientAwaitingReply } from "./model";
 
 const get = (id: string): RequestDetail =>
   structuredClone(requestDetails.find((d) => d.request.id === id)!);
@@ -194,6 +195,28 @@ describe("Client commands", () => {
     ).detail;
     expect(terms.termsAcceptances.at(-1)!.kind).toBe("FINAL");
     expect(terms.request.status).not.toBe("AWAITING_TERMS");
+  });
+
+  it("asks about a proposal without changing the status, and the Creative can reply (D-027)", () => {
+    const d = get("req-kitchen");
+    const asked = value(
+      applyClientCommand(
+        d,
+        { type: "ASK_ABOUT_PROPOSAL", message: "Does this include the menu boards?" },
+        ctx(d.request.clientId),
+      ),
+    ).detail;
+    expect(asked.request.status).toBe(d.request.status);
+    expect(openProposal(asked)!.id).toBe(openProposal(d)!.id);
+    expect(clientAwaitingReply(asked)).toBe(true);
+    const replied = value(
+      applyCreativeCommand(asked, { type: "NOTE", message: "Yes, both boards." }, ctx()),
+    ).detail;
+    expect(replied.request.status).toBe(d.request.status);
+    expect(clientAwaitingReply(replied)).toBe(false);
+    expect(applyClientCommand(asked, { type: "ACCEPT_PROPOSAL" }, ctx(d.request.clientId)).ok).toBe(
+      true,
+    );
   });
 
   it("cannot accept an expired quote (D-017)", () => {

@@ -52,3 +52,15 @@ export function saveResult(result: CommandResult): boolean {
       : current.projects,
   });
 }
+
+/** Repository Projects plus any started in this browser, newest first. */
+export function useMergedProjects(base: Project[], belongsTo: (p: Project) => boolean): Project[] {
+  const value = useRequestStore();
+  return useMemo(() => {
+    const local = Object.values(value.projects ?? {}).filter(
+      (p) => belongsTo(p) && !base.some((b) => b.id === p.id),
+    );
+    return [...base, ...local].sort((a, b) => b.startedAt.localeCompare(a.startedAt));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the filter is fixed per screen
+  }, [base, value.projects]);
+}

@@ -429,6 +429,15 @@ Rule:
 
 PRD NOT-002 lists the events that notify users In-app + Email but specifies no preference controls. Users get a switch per event for **email**. **In-app** notifications are always on and cannot be turned off, so nothing that moves a Request or Project is missed. Email defaults to on. SMS is never used for routine notifications (CLAUDE.md §7). Turning an email off never blocks or reverses the business action.
 
+### D-044 Accepted fixture-phase risks (approved 20 November 2026)
+
+Two findings from the 7.13 quality review are accepted until the stated expiry. Neither may reach production data.
+
+| Risk | Severity | Why accepted | Controls meanwhile | Expires |
+|---|---|---|---|---|
+| The Client Request page receives the Creative's payment methods before the payment stage and hides them until then (PAY-003). Request commands run in the browser. | Medium now; High once real data exists | Fixture data only. The server can't see progress made in the browser, so the clickable flow needs the data up front. | `/app` is served in production only when `ENABLE_DEV_ROUTES=true` (D-040). Fixture data only. Phase 8 security gates in the roadmap, with an authorization test. | Phase 8, before any real Creative or Client data |
+| `minimatch` denial-of-service advisory (GHSA-g3hv-75wg-m249) via `shadcn` → `ts-morph`. | Moderate | Reached only by the `shadcn` CLI's code-generation tooling, not runtime code. Overriding it risks breaking the CLI. | Re-checked by `pnpm audit` at each quality review. | When `shadcn` ships a patched `ts-morph`, or Phase 14 |
+
 ---
 
 ## 6. Tracked Risks

@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { PageSkeleton } from "@/components/layout/route-helpers";
 import { getViewer } from "@/features/auth/viewer";
 import { repositories } from "@/features/data";
-import { CreativeRequests } from "@/features/requests/creative-requests";
+import { CreativeRequests } from "@/features/requests/requests-list";
 import { FIXTURE_NOW } from "@/lib/fixtures/time";
 
 export const metadata: Metadata = { title: "Requests" };

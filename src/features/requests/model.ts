@@ -55,7 +55,7 @@ export function requestHistory(
     if (p.respondedAt && (p.status === "ACCEPTED" || p.status === "REJECTED")) {
       out.push({
         at: p.respondedAt,
-        text: `${you("CLIENT")} ${p.status === "ACCEPTED" ? "accepted" : "turned down"} version ${p.version}`,
+        text: `${you("CLIENT")} ${p.status === "ACCEPTED" ? "accepted" : "declined"} version ${p.version}`,
       });
     }
   }
@@ -75,7 +75,10 @@ export function requestHistory(
   for (const d of detail.declarations) {
     out.push({
       at: d.declaredAt,
-      text: `${you("CLIENT")} said they paid by ${d.paymentMethod.label}`,
+      text:
+        viewer === "CLIENT"
+          ? `You declared a payment by ${d.paymentMethod.label}`
+          : `${names.CLIENT} said they paid by ${d.paymentMethod.label}`,
     });
     if (d.resolution === "NOT_RECEIVED" && d.resolvedAt) {
       out.push({

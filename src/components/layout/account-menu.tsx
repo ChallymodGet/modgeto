@@ -2,7 +2,7 @@
 
 import { ArrowLeftRight, LogOut, Settings, Sparkles, UserRound } from "lucide-react";
 import NextLink from "next/link";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, initials } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,7 +37,8 @@ export function AccountMenu({ name, email, avatarUrl, workspace, hasCreative }: 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label={`Account menu for ${name}`}
+        // Ends with the visible initials so voice users can say what they see (WCAG 2.5.3).
+        aria-label={`Account menu for ${name}, ${initials(name)}`}
         className={cn(
           "flex size-11 items-center justify-center rounded-full md:size-10",
           "transition-shadow hover:ring-4 hover:ring-surface-subtle",

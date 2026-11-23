@@ -10,5 +10,9 @@ const subscribe = () => () => {};
  * values are the saved ones rather than the server's.
  */
 export function useMounted(): boolean {
-  return useSyncExternalStore(subscribe, () => true, () => false);
+  return useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
 }
